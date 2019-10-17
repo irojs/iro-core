@@ -1,8 +1,8 @@
 import { IroColor } from './color';
 
 export function getSliderDimensions(props: any) {
-  let { width, sliderHeight, borderWidth, handleRadius } = props;
-  sliderHeight = sliderHeight ? sliderHeight : props.padding * 2 + handleRadius * 2 + borderWidth * 2;
+  let { width, sliderHeight, borderWidth, handleRadius, padding } = props;
+  sliderHeight = sliderHeight ? sliderHeight : padding * 2 + handleRadius * 2 + borderWidth * 2;
   return {
     radius: sliderHeight / 2,
     x: 0,

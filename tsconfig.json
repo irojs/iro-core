@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "*": ["types/*"] },
+        "outDir": "dist",
+        "target": "es6",
+        "jsx": "react",
+        "jsxFactory": "h",
+        "declaration": true,
+        "sourceMap": true,
+        "lib": [
+          "es2017",
+          "dom"
+        ],
+    },
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.tsx"
+    ]
+}

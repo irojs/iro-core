@@ -1,5 +1,3 @@
-import { parseUnit, parseHexInt, intToHex } from './colorUtils';
-
 // Some regular expressions for rgb() and hsl() Colors are borrowed from tinyColor
 // https://github.com/bgrins/TinyColor
 
@@ -29,6 +27,29 @@ const REGEX_HEX_4 = new RegExp(`${ HEX_START }${ HEX_INT_SINGLE }${ HEX_INT_SING
 const REGEX_HEX_6 = new RegExp(`${ HEX_START }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }$`);
 const REGEX_HEX_8 = new RegExp(`${ HEX_START }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }$`);
 
+/**
+ * Parse a css unit string - either regular int or a percentage number
+ */
+function parseUnit(str: string, max: number): number {
+  const isPercentage = str.indexOf('%') > -1;
+  const num = parseFloat(str);
+  return isPercentage ? (max / 100) * num : num;
+}
+
+/**
+ * Parse hex str to an int
+ */
+function parseHexInt(str: string): number {
+  return parseInt(str, 16);
+}
+
+/**
+ * Convert into to 2-digit hex
+ */
+function intToHex(int: number): string {
+  return int.toString(16).padStart(2, '0');
+}
+
 interface ColorChanges {
   h: boolean;
   s: boolean;
@@ -57,33 +78,21 @@ interface HslColor {
   a?: number;
 }
 
-function instanceOfHsv(value: any): value is HsvColor {
-  return ('h' in value) && ('s' in value) && ('v' in value);
-}
-
-function instanceOfRgb(value: any): value is RgbColor {
-  return ('r' in value) && ('g' in value) && ('b' in value);
-}
-
-function instanceOfHsl(value: any): value is HslColor {
-  return ('h' in value) && ('s' in value) && ('l' in value);
-}
-
 export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
 
 export class IroColor {
   public onChange: Function;
-  private value: HsvColor;
+  public value: HsvColor;
   /**
     * @constructor Color object
     * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
   */
-  constructor(value: IroColorValue, onChange?: Function) {
-    // The watch callback function for this Color will be stored here
-    this.onChange = onChange;
+  constructor(value?: IroColorValue, onChange?: Function) {
     // The default Color value
     this.value = {h: 0, s: 0, v: 0, a: 1};
     if (value) this.set(value);
+    // The watch callback function for this Color will be stored here
+    this.onChange = onChange;
   }
 
   /**
@@ -93,25 +102,25 @@ export class IroColor {
   public set(value: IroColorValue) {
     const isString = typeof value === 'string';
     const isObject = typeof value === 'object';
-    if ((isString) && (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value as string))) {
+    if (typeof value === 'string' && (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value as string))) {
       this.hexString = value as string;
     }
-    else if ((isString) && (/^rgba?/.test(value as string))) {
+    else if (typeof value === 'string' && (/^rgba?/.test(value as string))) {
       this.rgbString = value as string;
     }
-    else if ((isString) && (/^hsla?/.test(value as string))) {
+    else if (typeof value === 'string' && (/^hsla?/.test(value as string))) {
       this.hslString = value as string;
     }
-    else if ((isObject) && (value instanceof IroColor)) {
+    else if (typeof value === 'object' && (value instanceof IroColor)) {
       this.hsv = value.hsv;
     }
-    else if ((isObject) && instanceOfRgb(value)) {
+    else if (typeof value === 'object' && ('r' in value) && ('g' in value) && ('b' in value)) {
       this.rgb = value;
     }
-    else if ((isObject) && instanceOfHsv(value)) {
+    else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('v' in value)) {
       this.hsv = value;
     }
-    else if ((isObject) && instanceOfHsl(value)) {
+    else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('l' in value)) {
       this.hsl = value;
     }
     else {
@@ -251,7 +260,8 @@ export class IroColor {
       let changes: ColorChanges = {
         h: false,
         v: false,
-        s: false
+        s: false,
+        a: false,
       };
 
       for (let key in oldValue) {
@@ -278,7 +288,7 @@ export class IroColor {
   public set rgb(value: any) {
     this.hsv = {
       ...IroColor.rgbToHsv(value), 
-      // a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? 1 : value.a
     };
   }
 
@@ -294,7 +304,7 @@ export class IroColor {
   public set hsl(value: any) {
     this.hsv = {
       ...IroColor.hslToHsv(value), 
-      // a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? 1 : value.a
     };
   }
 

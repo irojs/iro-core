@@ -19,12 +19,12 @@ interface HslColor {
 export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
 export declare class IroColor {
     onChange: Function;
-    private value;
+    value: HsvColor;
     /**
       * @constructor Color object
       * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
     */
-    constructor(value: IroColorValue, onChange?: Function);
+    constructor(value?: IroColorValue, onChange?: Function);
     /**
       * @desc set the Color from any valid value
       * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
