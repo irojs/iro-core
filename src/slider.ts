@@ -30,7 +30,13 @@ export function getSliderValueFromInput(props: any, x: number, y: number, bounds
   const cornerRadius = bounds.height / 2;
   let dist = x - (bounds.left + cornerRadius);
   dist = Math.max(Math.min(dist, handleRange), 0);
-  return Math.round((100 / handleRange) * dist);
+  const percent = Math.round((100 / handleRange) * dist);
+  switch (props.sliderType) {
+    case 'hue':
+      return percent * 3.6;
+    default:
+      return percent;
+  }
 }
 
 export function getSliderHandlePosition(props: any) {
@@ -48,27 +54,27 @@ export function getSliderGradient(props: any) {
   switch (props.sliderType) {
     case 'hue':
       return [
-        {offset: '0',      color: '#f00'},
-        {offset: '16.666', color: '#ff0'},
-        {offset: '33.333', color: '#0f0'},
-        {offset: '50',     color: '#0ff'},
-        {offset: '66.666', color: '#00f'},
-        {offset: '83.333', color: '#f0f'},
-        {offset: '100',    color: '#f00'},
+        ['0',      '#f00'],
+        ['16.666', '#ff0'],
+        ['33.333', '#0f0'],
+        ['50',     '#0ff'],
+        ['66.666', '#00f'],
+        ['83.333', '#f0f'],
+        ['100',    '#f00'],
       ];
     case 'saturation':
       const noSat = IroColor.hsvToHsl({h: hsv.h, s: 0, v: hsv.v});
       const fullSat = IroColor.hsvToHsl({h: hsv.h, s: 100, v: hsv.v});
       return [
-        {offset: '0', color: `hsl(${noSat.h}, ${noSat.s}%, ${noSat.l}%)`},
-        {offset: '100', color: `hsl(${fullSat.h}, ${fullSat.s}%, ${fullSat.l}%)`}
+        ['0', `hsl(${noSat.h}, ${noSat.s}%, ${noSat.l}%)`],
+        ['100', `hsl(${fullSat.h}, ${fullSat.s}%, ${fullSat.l}%)`]
       ];
     case 'value':
     default:
       const hsl = IroColor.hsvToHsl({h: hsv.h, s: hsv.s, v: 100});
       return [
-        {offset: '0', color: '#000'},
-        {offset: '100', color: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`}
+        ['0', '#000'],
+        ['100', `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`]
       ];
   }
 }

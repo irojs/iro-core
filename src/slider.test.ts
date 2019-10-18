@@ -168,13 +168,13 @@ describe('getSliderGradient', () => {
       sliderType: 'hue',
       color: new IroColor()
     })).toMatchObject([
-      {offset: '0',      color: '#f00'},
-      {offset: '16.666', color: '#ff0'},
-      {offset: '33.333', color: '#0f0'},
-      {offset: '50',     color: '#0ff'},
-      {offset: '66.666', color: '#00f'},
-      {offset: '83.333', color: '#f0f'},
-      {offset: '100',    color: '#f00'},
+      ['0',      '#f00'],
+      ['16.666', '#ff0'],
+      ['33.333', '#0f0'],
+      ['50',     '#0ff'],
+      ['66.666', '#00f'],
+      ['83.333', '#f0f'],
+      ['100',    '#f00'],
     ]);
   });
   test('getSliderGradient handles saturation type slider', () => {
@@ -182,15 +182,15 @@ describe('getSliderGradient', () => {
       sliderType: 'saturation',
       color: new IroColor('#f00')
     })).toMatchObject([
-      {offset: '0', color: 'hsl(0, 0%, 100%)'},
-      {offset: '100', color: 'hsl(0, 100%, 50%)'},
+      ['0', 'hsl(0, 0%, 100%)'],
+      ['100', 'hsl(0, 100%, 50%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'saturation',
       color: new IroColor('#000')
     })).toMatchObject([
-      {offset: '0', color: 'hsl(0, 0%, 0%)'},
-      {offset: '100', color: 'hsl(0, 0%, 0%)'},
+      ['0', 'hsl(0, 0%, 0%)'],
+      ['100', 'hsl(0, 0%, 0%)'],
     ]);
   });
   test('getSliderGradient handles value type slider', () => {
@@ -198,22 +198,22 @@ describe('getSliderGradient', () => {
       sliderType: 'value',
       color: new IroColor('#fff')
     })).toMatchObject([
-      {offset: '0', color: '#000'},
-      {offset: '100', color: 'hsl(0, 0%, 100%)'},
+      ['0', '#000'],
+      ['100', 'hsl(0, 0%, 100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#000')
     })).toMatchObject([
-      {offset: '0', color: '#000'},
-      {offset: '100', color: 'hsl(0, 0%, 100%)'},
+      ['0', '#000'],
+      ['100', 'hsl(0, 0%, 100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#f00')
     })).toMatchObject([
-      {offset: '0', color: '#000'},
-      {offset: '100', color: 'hsl(0, 100%, 50%)'},
+      ['0', '#000'],
+      ['100', 'hsl(0, 100%, 50%)'],
     ]);
 
   });

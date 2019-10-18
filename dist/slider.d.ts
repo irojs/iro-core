@@ -11,7 +11,4 @@ export declare function getSliderHandlePosition(props: any): {
     x: number;
     y: number;
 };
-export declare function getSliderGradient(props: any): {
-    offset: string;
-    color: string;
-}[];
+export declare function getSliderGradient(props: any): string[][];
