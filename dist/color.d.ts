@@ -66,9 +66,12 @@ export declare class IroColor {
       * @return {Object} hsv object
     */
     static hslToHsv(hsl: HslColor): HsvColor;
+    static kelvinToRgb(kelvin: number): RgbColor;
+    static rgbToKelvin(rgb: RgbColor): number;
     hsv: any;
     rgb: any;
     hsl: any;
+    kelvin: number;
     rgbString: string;
     hexString: string;
     hslString: string;

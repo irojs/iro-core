@@ -52,29 +52,40 @@ export function getSliderGradient(props: any) {
   const hsv = props.color.hsv;
 
   switch (props.sliderType) {
+    case 'kelvin':
+      const stops = [];
+      const min = 3000;
+      const max = 9000;
+      const numStops = 12;
+      const range = max - min;
+      for (let kelvin = min, stop = 0; kelvin < max; kelvin += range / numStops, stop += 1) {
+        const { r, g, b } = IroColor.kelvinToRgb(kelvin);
+        stops.push([ 100 / numStops * stop, `rgb(${r},${g},${b})` ]);
+      }
+      return stops;
     case 'hue':
       return [
-        ['0',      '#f00'],
-        ['16.666', '#ff0'],
-        ['33.333', '#0f0'],
-        ['50',     '#0ff'],
-        ['66.666', '#00f'],
-        ['83.333', '#f0f'],
-        ['100',    '#f00'],
+        [0,      '#f00'],
+        [16.666, '#ff0'],
+        [33.333, '#0f0'],
+        [50,     '#0ff'],
+        [66.666, '#00f'],
+        [83.333, '#f0f'],
+        [100,    '#f00'],
       ];
     case 'saturation':
       const noSat = IroColor.hsvToHsl({h: hsv.h, s: 0, v: hsv.v});
       const fullSat = IroColor.hsvToHsl({h: hsv.h, s: 100, v: hsv.v});
       return [
-        ['0', `hsl(${noSat.h}, ${noSat.s}%, ${noSat.l}%)`],
-        ['100', `hsl(${fullSat.h}, ${fullSat.s}%, ${fullSat.l}%)`]
+        [0, `hsl(${noSat.h}, ${noSat.s}%, ${noSat.l}%)`],
+        [100, `hsl(${fullSat.h}, ${fullSat.s}%, ${fullSat.l}%)`]
       ];
     case 'value':
     default:
       const hsl = IroColor.hsvToHsl({h: hsv.h, s: hsv.s, v: 100});
       return [
-        ['0', '#000'],
-        ['100', `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`]
+        [0, '#000'],
+        [100, `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`]
       ];
   }
 }

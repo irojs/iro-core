@@ -1,4 +1,4 @@
-import { IroColorValue } from './color';
+import { IroColor, IroColorValue } from './color';
 
 export interface IroHandleOrigin {
   x: number;

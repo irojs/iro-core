@@ -243,6 +243,39 @@ export class IroColor {
     };
   }
 
+  public static kelvinToRgb(kelvin: number): RgbColor {
+    const temp = kelvin / 100;
+    let r,g,b;
+    if (temp < 66) {
+        r = 255
+        g = -155.25485562709179 - 0.44596950469579133 * (g = temp-2) + 104.49216199393888 * Math.log(g)
+        b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp-10) + 115.67994401066147 * Math.log(b)
+    } else {
+        r = 351.97690566805693 + 0.114206453784165 * (r = temp-55) - 40.25366309332127 * Math.log(r)
+        g = 325.4494125711974 + 0.07943456536662342 * (g = temp-50) - 28.0852963507957 * Math.log(g)
+        b = 255
+    }
+    return {r, g, b};
+  }
+
+  public static rgbToKelvin(rgb: RgbColor): number {
+    const { r, g, b } = rgb;
+    let minTemp = 1000;
+    let maxTemp = 40000;
+    const eps = 0.4;
+    let temp;
+    while (maxTemp - minTemp > eps) {
+      temp = (maxTemp + minTemp) * 0.5;
+      const rgb = IroColor.kelvinToRgb(temp);
+      if ((rgb.b / rgb.r) >= (b / r)) {
+          maxTemp = temp;
+      } else {
+          minTemp = temp;
+      }
+    }
+    return temp;
+  }
+
   public get hsv() {
     // _value is cloned to allow changes to be made to the values before passing them back
     const value = this.value;
@@ -306,6 +339,14 @@ export class IroColor {
       ...IroColor.hslToHsv(value), 
       a: (value.a === undefined) ? 1 : value.a
     };
+  }
+
+  public get kelvin() {
+    return IroColor.rgbToKelvin(this.rgb);
+  }
+
+  public set kelvin(value: number) {
+    this.rgb = IroColor.kelvinToRgb(value);
   }
 
   public get rgbString() {
