@@ -38,10 +38,10 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
   const isVertical = props.layoutDirection === 'vertical';
   // automatically calculate sliderHeight if its not defined
   sliderHeight = sliderHeight ? sliderHeight : padding * 2 + handleRadius * 2 + borderWidth * 2;
-  const handleRange = width - sliderHeight;
   if (sliderShape === 'circle') {
     return {
-      handleRange,
+      handleStart: props.padding + props.handleRadius,
+      handleRange: width - padding * 2 - handleRadius * 2 - borderWidth * 2,
       width: width,
       height: width,
       cx: width / 2,
@@ -50,7 +50,8 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
     }
   } else {
     return {
-      handleRange,
+      handleStart: sliderHeight / 2,
+      handleRange: width - sliderHeight,
       radius: sliderHeight / 2,
       x: 0,
       y: 0,
@@ -91,12 +92,12 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>) {
  * @param bounds - slider element bounding box
  */
 export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number, bounds: any) {
-  const { handleRange, radius } = getSliderDimensions(props);
+  const { handleRange, handleStart } = getSliderDimensions(props);
   let handlePos;
   if (props.layoutDirection === 'vertical') {
-    handlePos = -1 * (y - bounds.top) + handleRange + radius;
+    handlePos = -1 * (y - bounds.top) + handleRange + handleStart;
   } else {
-    handlePos = x - (bounds.left + radius);
+    handlePos = x - (bounds.left + handleStart);
   }
   // clamo handle position
   handlePos = Math.max(Math.min(handlePos, handleRange), 0);
@@ -118,13 +119,13 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
  * @param props - slider props
  */
 export function getSliderHandlePosition(props: Partial<SliderOptions>) {
-  const { width, height, radius, handleRange } = getSliderDimensions(props);
+  const { width, height, handleRange, handleStart } = getSliderDimensions(props);
   const isVertical = props.layoutDirection === 'vertical';
   const sliderValue = getCurrentSliderValue(props);
   const midPoint = isVertical ? width / 2 : height / 2;
-  let handlePos = radius + (sliderValue / 100) * handleRange;
+  let handlePos = handleStart + (sliderValue / 100) * handleRange;
   if (isVertical) {
-    handlePos = -1 * handlePos + handleRange + radius * 2;
+    handlePos = -1 * handlePos + handleRange + handleStart * 2;
   } 
   return {x: isVertical ? midPoint : handlePos, y: isVertical ? handlePos : midPoint};
 }
