@@ -2,7 +2,7 @@ import { IroColor } from './color';
 import { IroColorPickerOptions } from './colorPickerOptions';
 
 export type SliderShape = 'bar' | 'circle' | '';
-export type SliderType = 'hue' | 'saturation' | 'value' | 'temperature' | '';
+export type SliderType = 'hue' | 'saturation' | 'value' | 'alpha' | 'temperature' | '';
 
 export interface SliderOptions extends IroColorPickerOptions {
   color: IroColor;
@@ -66,8 +66,10 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
  * @param props - slider props
  */
 export function getCurrentSliderValue(props: Partial<SliderOptions>) {
-  const hsv = props.color.hsv;
+  const hsva = props.color.hsva;
   switch (props.sliderType) {
+    case 'alpha':
+      return hsva.a * 100;
     case 'temperature':
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
@@ -75,12 +77,12 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>) {
       // clmap percentage
       return Math.max(0, Math.min(percent, 100));
     case 'hue':
-      return hsv.h /= 3.6;
+      return hsva.h /= 3.6;
     case 'saturation':
-      return hsv.s;
+      return hsva.s;
     case 'value':
     default:
-      return hsv.v;
+      return hsva.v;
   }
 }
 
@@ -99,7 +101,7 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
   } else {
     handlePos = x - (bounds.left + handleStart);
   }
-  // clamo handle position
+  // clamp handle position
   handlePos = Math.max(Math.min(handlePos, handleRange), 0);
   const percent = Math.round((100 / handleRange) * handlePos);
   switch (props.sliderType) {
@@ -107,6 +109,8 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
       return minTemperature + temperatureRange * (percent / 100);
+    case 'alpha':
+      return percent / 100;
     case 'hue':
       return percent * 3.6;
     default:
@@ -138,6 +142,12 @@ export function getSliderGradient(props: Partial<SliderOptions>) {
   const hsv = props.color.hsv;
 
   switch (props.sliderType) {
+    case 'alpha':
+      const rgb = props.color.rgb;
+      return [
+        [0, `rgba(${ rgb.r }, ${ rgb.g }, ${ rgb.b }, 0)`],
+        [100, `rgba(${ rgb.r }, ${ rgb.g }, ${ rgb.b }, 1)`],
+      ]
     case 'temperature':
       const stops = [];
       const min = props.minTemperature;
