@@ -1,7 +1,7 @@
 interface HsvColor {
-    h: number;
-    s: number;
-    v: number;
+    h?: number;
+    s?: number;
+    v?: number;
     a?: number;
 }
 interface RgbColor {
@@ -18,62 +18,75 @@ interface HslColor {
 }
 export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
 export declare class IroColor {
-    onChange: Function;
-    value: HsvColor;
+    private $;
+    private onChange;
     /**
       * @constructor Color object
-      * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
+      * @param value - initial color value
     */
     constructor(value?: IroColorValue, onChange?: Function);
     /**
-      * @desc set the Color from any valid value
-      * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
+      * @desc Set the Color from any valid value
+      * @param value - new color value
     */
     set(value: IroColorValue): void;
     /**
-      * @desc shortcut to set a specific channel value
-      * @param {String} format - hsv | hsl | rgb
-      * @param {String} channel - individual channel to set, for example if model = hsl, chanel = h | s | l
-      * @param {Number} value - new value for the channel
+      * @desc Shortcut to set a specific channel value
+      * @param format - hsv | hsl | rgb
+      * @param channel - individual channel to set, for example if model = hsl, chanel = h | s | l
+      * @param value - new value for the channel
     */
     setChannel(format: string, channel: string, value: number): void;
     /**
       * @desc make new Color instance with the same value as this one
-      * @return {IroColor}
     */
     clone(): IroColor;
     /**
-      * @desc convert hsv object to rgb
-      * @param {Object} hsv hsv object
-      * @return {Object} rgb object
+      * @desc Convert hsv object to rgb
+      * @param hsv - hsv color object
     */
     static hsvToRgb(hsv: HsvColor): RgbColor;
     /**
-      * @desc convert rgb object to hsv
-      * @param {Object} rgb - rgb object
-      * @return {Object} hsv object
+      * @desc Convert rgb object to hsv
+      * @param rgb - rgb object
     */
     static rgbToHsv(rgb: RgbColor): HsvColor;
     /**
-      * @desc convert hsv object to hsl
-      * @param {Object} hsv - hsv object
-      * @return {Object} hsl object
+      * @desc Convert hsv object to hsl
+      * @param hsv - hsv object
     */
     static hsvToHsl(hsv: HsvColor): HslColor;
     /**
-      * @desc convert hsl object to hsv
-      * @param {Object} hsl - hsl object
-      * @return {Object} hsv object
+      * @desc Convert hsl object to hsv
+      * @param hsl - hsl object
     */
     static hslToHsv(hsl: HslColor): HsvColor;
+    /**
+      * @desc Convert a kelvin temperature to an approx, RGB value
+      * @param kelvin - kelvin temperature
+    */
     static kelvinToRgb(kelvin: number): RgbColor;
+    /**
+     * @desc Convert an RGB color to an approximate kelvin temperature
+     * @param kelvin - kelvin temperature
+   */
     static rgbToKelvin(rgb: RgbColor): number;
-    hsv: any;
-    rgb: any;
-    hsl: any;
+    hsv: HsvColor;
+    hsva: HsvColor;
+    hue: number;
+    saturation: number;
+    value: number;
+    alpha: number;
     kelvin: number;
+    rgb: RgbColor;
+    rgba: RgbColor;
+    hsl: HslColor;
+    hsla: HslColor;
     rgbString: string;
+    rgbaString: string;
     hexString: string;
+    hex8String: string;
     hslString: string;
+    hslaString: string;
 }
 export {};

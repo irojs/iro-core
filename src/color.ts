@@ -1,5 +1,7 @@
 // Some regular expressions for rgb() and hsl() Colors are borrowed from tinyColor
 // https://github.com/bgrins/TinyColor
+// Kelvin temperature math borrowed from Neil Barlett's implementation
+// from https://github.com/neilbartlett/color-temperature
 
 // https://www.w3.org/TR/css3-values/#integers
 const CSS_INTEGER = `[-\\+]?\\d+%?`;
@@ -13,12 +15,13 @@ const CSS_UNIT = `(?:${ CSS_NUMBER })|(?:${ CSS_INTEGER })`;
 const PERMISSIVE_MATCH_3 = `[\\s|\\(]+(${ CSS_UNIT })[,|\\s]+(${ CSS_UNIT })[,|\\s]+(${ CSS_UNIT })\\s*\\)?`;
 const PERMISSIVE_MATCH_4 = `[\\s|\\(]+(${ CSS_UNIT })[,|\\s]+(${ CSS_UNIT })[,|\\s]+(${ CSS_UNIT })[,|\\s]+(${ CSS_UNIT })\\s*\\)?`;
 
-// Regex patterns for functional colors
+// Regex patterns for functional color strings
 const REGEX_FUNCTIONAL_RGB = new RegExp(`rgb${ PERMISSIVE_MATCH_3 }`);
 const REGEX_FUNCTIONAL_RGBA = new RegExp(`rgba${ PERMISSIVE_MATCH_4 }`);
 const REGEX_FUNCTIONAL_HSL = new RegExp(`hsl${ PERMISSIVE_MATCH_3 }`);
 const REGEX_FUNCTIONAL_HSLA = new RegExp(`hsla${ PERMISSIVE_MATCH_4 }`);
 
+// Color string parsing regex
 const HEX_START = `^(?:#?|0x?)`;
 const HEX_INT_SINGLE = `([0-9a-fA-F]{1})`;
 const HEX_INT_DOUBLE = `([0-9a-fA-F]{2})`;
@@ -27,8 +30,17 @@ const REGEX_HEX_4 = new RegExp(`${ HEX_START }${ HEX_INT_SINGLE }${ HEX_INT_SING
 const REGEX_HEX_6 = new RegExp(`${ HEX_START }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }$`);
 const REGEX_HEX_8 = new RegExp(`${ HEX_START }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }${ HEX_INT_DOUBLE }$`);
 
+// Kelvin temperature bounds
+const KELVIN_MIN = 1000;
+const KELVIN_MAX = 40000;
+
+// Math shorthands
+const { log, round, floor } = Math;
+
 /**
- * Parse a css unit string - either regular int or a percentage number
+ * @desc Parse a css unit string - either regular int or a percentage number
+ * @param str - css unit string
+ * @param max - max unit value, used for calculating percentages
  */
 function parseUnit(str: string, max: number): number {
   const isPercentage = str.indexOf('%') > -1;
@@ -37,14 +49,16 @@ function parseUnit(str: string, max: number): number {
 }
 
 /**
- * Parse hex str to an int
+ * @desc Parse hex str to an int
+ * @param str - hex string to parse
  */
 function parseHexInt(str: string): number {
   return parseInt(str, 16);
 }
 
 /**
- * Convert into to 2-digit hex
+ * @desc Convert nunber into to 2-digit hex
+ * @param int - number to convert
  */
 function intToHex(int: number): string {
   return int.toString(16).padStart(2, '0');
@@ -54,13 +68,14 @@ interface ColorChanges {
   h: boolean;
   s: boolean;
   v: boolean;
-  a?: boolean;
+  a: boolean;
 }
 
+// all hsv color channels are optional by design
 interface HsvColor {
-  h: number;
-  s: number;
-  v: number;
+  h?: number;
+  s?: number;
+  v?: number;
   a?: number;
 }
 
@@ -81,58 +96,61 @@ interface HslColor {
 export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
 
 export class IroColor {
-  public onChange: Function;
-  public value: HsvColor;
+  // internal color value storage
+  private $: HsvColor;
+  private onChange: Function;
   /**
     * @constructor Color object
-    * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
+    * @param value - initial color value
   */
   constructor(value?: IroColorValue, onChange?: Function) {
     // The default Color value
-    this.value = {h: 0, s: 0, v: 0, a: 1};
+    this.$ = {h: 0, s: 0, v: 0, a: 1};
     if (value) this.set(value);
     // The watch callback function for this Color will be stored here
     this.onChange = onChange;
   }
 
   /**
-    * @desc set the Color from any valid value
-    * @param {Object | String | IroColor} value - Color instance, object (hsv, hsl or rgb), string (hsl, rgb, hex)
+    * @desc Set the Color from any valid value
+    * @param value - new color value
   */
   public set(value: IroColorValue) {
-    const isString = typeof value === 'string';
-    const isObject = typeof value === 'object';
-    if (typeof value === 'string' && (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value as string))) {
-      this.hexString = value as string;
+    if (typeof value === 'string') {
+      if (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value as string)) {
+        this.hexString = value as string;
+      }
+      else if (/^rgba?/.test(value as string)) {
+        this.rgbString = value as string;
+      }
+      else if (/^hsla?/.test(value as string)) {
+        this.hslString = value as string;
+      }
     }
-    else if (typeof value === 'string' && (/^rgba?/.test(value as string))) {
-      this.rgbString = value as string;
-    }
-    else if (typeof value === 'string' && (/^hsla?/.test(value as string))) {
-      this.hslString = value as string;
-    }
-    else if (typeof value === 'object' && (value instanceof IroColor)) {
-      this.hsv = value.hsv;
-    }
-    else if (typeof value === 'object' && ('r' in value) && ('g' in value) && ('b' in value)) {
-      this.rgb = value;
-    }
-    else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('v' in value)) {
-      this.hsv = value;
-    }
-    else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('l' in value)) {
-      this.hsl = value;
+    else if (typeof value === 'object') {
+      if (value instanceof IroColor) {
+        this.hsv = value.hsv;
+      }
+      else if (typeof value === 'object' && ('r' in value) && ('g' in value) && ('b' in value)) {
+        this.rgb = value;
+      }
+      else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('v' in value)) {
+        this.hsv = value;
+      }
+      else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('l' in value)) {
+        this.hsl = value;
+      }
     }
     else {
-      throw new Error('invalid color value');
+      throw new Error('Invalid color value');
     }
   }
 
   /**
-    * @desc shortcut to set a specific channel value
-    * @param {String} format - hsv | hsl | rgb
-    * @param {String} channel - individual channel to set, for example if model = hsl, chanel = h | s | l
-    * @param {Number} value - new value for the channel
+    * @desc Shortcut to set a specific channel value
+    * @param format - hsv | hsl | rgb
+    * @param channel - individual channel to set, for example if model = hsl, chanel = h | s | l
+    * @param value - new value for the channel
   */
   public setChannel(format: string, channel: string, value: number) {
     this[format] = {...this[format], [channel]: value};
@@ -140,22 +158,20 @@ export class IroColor {
 
   /**
     * @desc make new Color instance with the same value as this one
-    * @return {IroColor}
   */
   public clone() {
     return new IroColor(this);
   }
 
   /**
-    * @desc convert hsv object to rgb
-    * @param {Object} hsv hsv object
-    * @return {Object} rgb object
+    * @desc Convert hsv object to rgb
+    * @param hsv - hsv color object
   */
   public static hsvToRgb(hsv: HsvColor): RgbColor {
     const h = hsv.h / 60;
     const s = hsv.s / 100;
     const v = hsv.v / 100;
-    const i = Math.floor(h);
+    const i = floor(h);
     const f = h - i;
     const p = v * (1 - s);
     const q = v * (1 - f * s);
@@ -172,9 +188,8 @@ export class IroColor {
   }
 
   /**
-    * @desc convert rgb object to hsv
-    * @param {Object} rgb - rgb object
-    * @return {Object} hsv object
+    * @desc Convert rgb object to hsv
+    * @param rgb - rgb object
   */
   public static rgbToHsv(rgb: RgbColor): HsvColor {
     const r = rgb.r / 255;
@@ -208,9 +223,8 @@ export class IroColor {
   }
 
   /**
-    * @desc convert hsv object to hsl
-    * @param {Object} hsv - hsv object
-    * @return {Object} hsl object
+    * @desc Convert hsv object to hsl
+    * @param hsv - hsv object
   */
   public static hsvToHsl(hsv: HsvColor): HslColor {
     const s = hsv.s / 100;
@@ -227,9 +241,8 @@ export class IroColor {
   }
 
   /**
-    * @desc convert hsl object to hsv
-    * @param {Object} hsl - hsl object
-    * @return {Object} hsv object
+    * @desc Convert hsl object to hsv
+    * @param hsl - hsl object
   */
   public static hslToHsv(hsl: HslColor): HsvColor {
     const l = hsl.l * 2;
@@ -243,47 +256,55 @@ export class IroColor {
     };
   }
 
+  /**
+    * @desc Convert a kelvin temperature to an approx, RGB value
+    * @param kelvin - kelvin temperature
+  */
   public static kelvinToRgb(kelvin: number): RgbColor {
     const temp = kelvin / 100;
-    let r,g,b;
+    let r, g, b;
     if (temp < 66) {
-        r = 255
-        g = -155.25485562709179 - 0.44596950469579133 * (g = temp-2) + 104.49216199393888 * Math.log(g)
-        b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp-10) + 115.67994401066147 * Math.log(b)
+      r = 255
+      g = -155.25485562709179 - 0.44596950469579133 * (g = temp-2) + 104.49216199393888 * log(g)
+      b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp-10) + 115.67994401066147 * log(b)
     } else {
-        r = 351.97690566805693 + 0.114206453784165 * (r = temp-55) - 40.25366309332127 * Math.log(r)
-        g = 325.4494125711974 + 0.07943456536662342 * (g = temp-50) - 28.0852963507957 * Math.log(g)
-        b = 255
+      r = 351.97690566805693 + 0.114206453784165 * (r = temp-55) - 40.25366309332127 * log(r)
+      g = 325.4494125711974 + 0.07943456536662342 * (g = temp-50) - 28.0852963507957 * log(g)
+      b = 255
     }
-    return {r, g, b};
+    return {r: floor(r), g: floor(g), b: floor(b)};
   }
 
+   /**
+    * @desc Convert an RGB color to an approximate kelvin temperature
+    * @param kelvin - kelvin temperature
+  */
   public static rgbToKelvin(rgb: RgbColor): number {
     const { r, g, b } = rgb;
-    let minTemp = 1000;
-    let maxTemp = 40000;
     const eps = 0.4;
+    let minTemp = KELVIN_MIN;
+    let maxTemp = KELVIN_MAX;
     let temp;
     while (maxTemp - minTemp > eps) {
       temp = (maxTemp + minTemp) * 0.5;
       const rgb = IroColor.kelvinToRgb(temp);
       if ((rgb.b / rgb.r) >= (b / r)) {
-          maxTemp = temp;
+        maxTemp = temp;
       } else {
-          minTemp = temp;
+        minTemp = temp;
       }
     }
     return temp;
   }
 
-  public get hsv() {
-    // _value is cloned to allow changes to be made to the values before passing them back
-    const value = this.value;
+  public get hsv(): HsvColor {
+    // value is cloned to allow changes to be made to the values before passing them back
+    const value = this.$;
     return {h: value.h, s: value.s, v: value.v};
   }
 
-  public set hsv(newValue: any) {
-    const oldValue = this.value;
+  public set hsv(newValue: HsvColor) {
+    const oldValue = this.$;
 
     newValue = { ...oldValue, ...newValue };
     // If this Color is being watched for changes we need to compare the new and old values to check the difference
@@ -301,47 +322,55 @@ export class IroColor {
         changes[key] = newValue[key] != oldValue[key]
       };
       // Update the old value
-      this.value = newValue;
+      this.$ = newValue;
       // If the value has changed, call hook callback
       if (changes.h || changes.s || changes.v || changes.a) this.onChange(this, changes);
     } else {
-      this.value = newValue;
+      this.$ = newValue;
     }
   }
 
-  public get rgb() {
-    const {r, g, b} = IroColor.hsvToRgb(this.value);
-    return {
-      r: Math.round(r),
-      g: Math.round(g),
-      b: Math.round(b),
-    };
+  public get hsva(): HsvColor {
+    return {...this.$};
   }
 
-  public set rgb(value: any) {
-    this.hsv = {
-      ...IroColor.rgbToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
-    };
+  public set hsva(value: HsvColor) {
+    this.hsv = value;
   }
 
-  public get hsl() {
-    const {h, s, l} = IroColor.hsvToHsl(this.value);
-    return {
-      h: Math.round(h),
-      s: Math.round(s),
-      l: Math.round(l),
-    };
+  public get hue(): number {
+    return this.$.h;
   }
 
-  public set hsl(value: any) {
-    this.hsv = {
-      ...IroColor.hslToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
-    };
+  public set hue(value: number) {
+    this.hsv = { h: value };
   }
 
-  public get kelvin() {
+  public get saturation(): number {
+    return this.$.s;
+  }
+
+  public set saturation(value: number) {
+    this.hsv = { s: value };
+  }
+
+  public get value(): number {
+    return this.$.v;
+  }
+
+  public set value(value: number) {
+    this.hsv = { s: value };
+  }
+
+  public get alpha(): number {
+    return this.$.a;
+  }
+
+  public set alpha(value: number) {
+    this.hsv = { ...this.hsv, a: value };
+  }
+
+  public get kelvin(): number {
     return IroColor.rgbToKelvin(this.rgb);
   }
 
@@ -349,7 +378,55 @@ export class IroColor {
     this.rgb = IroColor.kelvinToRgb(value);
   }
 
-  public get rgbString() {
+  public get rgb(): RgbColor {
+    const {r, g, b} = IroColor.hsvToRgb(this.$);
+    return {
+      r: round(r),
+      g: round(g),
+      b: round(b),
+    };
+  }
+
+  public set rgb(value: RgbColor) {
+    this.hsv = {
+      ...IroColor.rgbToHsv(value), 
+      a: (value.a === undefined) ? 1 : value.a
+    };
+  }
+
+  public get rgba(): RgbColor {
+    return { ...this.rgb, a: this.alpha };
+  }
+
+  public set rgba(value: RgbColor) {
+    this.rgb = value;
+  }
+
+  public get hsl(): HslColor {
+    const {h, s, l} = IroColor.hsvToHsl(this.$);
+    return {
+      h: round(h),
+      s: round(s),
+      l: round(l),
+    };
+  }
+
+  public set hsl(value: HslColor) {
+    this.hsv = {
+      ...IroColor.hslToHsv(value), 
+      a: (value.a === undefined) ? 1 : value.a
+    };
+  }
+
+  public get hsla(): HslColor {
+    return { ...this.hsl, a: this.alpha };
+  }
+
+  public set hsla(value: HslColor) {
+    this.hsl = value;
+  }
+
+  public get rgbString(): string {
     const rgb = this.rgb;
     return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
   }
@@ -372,11 +449,20 @@ export class IroColor {
       this.rgb = {r, g, b, a};
     } 
     else {
-      throw new Error('invalid rgb string');
+      throw new Error('Invalid rgb string');
     }
   }
 
-  public get hexString() {
+  public get rgbaString(): string {
+    const rgba = this.rgba;
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+  }
+
+  public set rgbaString(value: string) {
+    this.rgbString = value;
+  }
+
+  public get hexString(): string {
     const rgb = this.rgb;
     return `#${ intToHex(rgb.r) }${ intToHex(rgb.g) }${ intToHex(rgb.b) }`;
   }
@@ -410,11 +496,20 @@ export class IroColor {
       this.rgb = {r, g, b, a: a / 255};
     }
     else {
-      throw new Error('invalid hex string');
+      throw new Error('Invalid hex string');
     }
   }
 
-  public get hslString() {
+  public get hex8String(): string {
+    const rgba = this.rgba;
+    return `#${intToHex(rgba.r)}${intToHex(rgba.g)}${intToHex(rgba.b)}${intToHex(floor(rgba.a * 255))}`;
+  }
+
+  public set hex8String(value: string) {
+    this.hexString = value;
+  }
+
+  public get hslString(): string {
     const hsl = this.hsl;
     return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
   }
@@ -437,7 +532,16 @@ export class IroColor {
       this.hsl = {h, s, l, a};
     } 
     else {
-      throw new Error('invalid hsl string');
+      throw new Error('Invalid hsl string');
     }
+  }
+
+  public get hslaString(): string {
+    const hsla = this.hsla;
+    return `hsl(${hsla.h}, ${hsla.s}%, ${hsla.l}%, ${hsla.a})`;
+  }
+
+  public set hslaString(value: string) {
+    this.hslString = value;
   }
 }

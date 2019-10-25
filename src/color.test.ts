@@ -69,6 +69,23 @@ describe('Color conversion', () => {
     // 75% s 75% l
     expect(IroColor.hsvToHsl({h: 0, s: 40, v: 93.75})).toMatchObject({h: 0, s: 75, l: 75});
   });
+
+  test('Color.kelvinToRgb accurately converts kelvin temperature to rgb', () => {
+    expect(IroColor.kelvinToRgb(3000)).toMatchObject({r: 255, g: 180, b: 108});
+    expect(IroColor.kelvinToRgb(6500)).toMatchObject({r: 255, g: 249, b: 254});
+    expect(IroColor.kelvinToRgb(12000)).toMatchObject({r: 191, g: 211, b: 255});
+    expect(IroColor.kelvinToRgb(18000)).toMatchObject({r: 171, g: 199, b: 255});
+    expect(IroColor.kelvinToRgb(24000)).toMatchObject({r: 162, g: 193, b: 255});
+    expect(IroColor.kelvinToRgb(30000)).toMatchObject({r: 158, g: 190, b: 255});
+    expect(IroColor.kelvinToRgb(36000)).toMatchObject({r: 156, g: 188, b: 255});
+  });
+
+  test('Color.rgbToKelvin accurately converts kelvin temperature to rgb', () => {
+    expect(Math.round(IroColor.rgbToKelvin({r: 156, g: 188, b: 255}))).toEqual(33972);
+    expect(Math.round(IroColor.rgbToKelvin({r: 158, g: 190, b: 255}))).toEqual(29083);
+    expect(Math.round(IroColor.rgbToKelvin({r: 191, g: 211, b: 255}))).toEqual(11876);
+    expect(Math.round(IroColor.rgbToKelvin({r: 255, g: 249, b: 254}))).toEqual(6489);
+  });
 });
 
 describe('Color constructor', () => {
@@ -138,21 +155,21 @@ describe('Color constructor', () => {
 
   test('Color alpha component can be set with an rgba or rgba percentage string', () => {
     var color = new IroColor('rgba(255, 255, 255, 0)');
-    expect(color.value.a).toEqual(0);
+    expect(color.alpha).toEqual(0);
     var color = new IroColor('rgba(255, 255, 255, 1)');
-    expect(color.value.a).toEqual(1);
+    expect(color.alpha).toEqual(1);
     var color = new IroColor('rgba(255, 255, 255, .5)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('rgba(255, 255, 255, 0.5)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('rgba(100%, 100%, 100%, 0%)');
-    expect(color.value.a).toEqual(0);
+    expect(color.alpha).toEqual(0);
     var color = new IroColor('rgba(100%, 100%, 100%, 100%)');
-    expect(color.value.a).toEqual(1);
+    expect(color.alpha).toEqual(1);
     var color = new IroColor('rgba(100%, 100%, 100%, 50%)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('rgba(100%, 100%, 100%, 50.0%)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
   });
 
   test('Color can be constructed with an hsl or hsla string', () => {
@@ -172,21 +189,21 @@ describe('Color constructor', () => {
 
   test('Color alpha component can be set with a hsla string', () => {
     var color = new IroColor('hsla(360, 100%, 100%, 0)');
-    expect(color.value.a).toEqual(0);
+    expect(color.alpha).toEqual(0);
     var color = new IroColor('hsla(360, 100%, 100%, 1)');
-    expect(color.value.a).toEqual(1);
+    expect(color.alpha).toEqual(1);
     var color = new IroColor('hsla(360, 100%, 100%, .5)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('hsla(360, 100%, 100%, 0.5)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('hsla(100%, 100%, 100%, 0%)');
-    expect(color.value.a).toEqual(0);
+    expect(color.alpha).toEqual(0);
     var color = new IroColor('hsla(100%, 100%, 100%, 100%)');
-    expect(color.value.a).toEqual(1);
+    expect(color.alpha).toEqual(1);
     var color = new IroColor('hsla(100%, 100%, 100%, 50%)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
     var color = new IroColor('hsla(100%, 100%, 100%, 50.0%)');
-    expect(color.value.a).toEqual(0.5);
+    expect(color.alpha).toEqual(0.5);
   });
 
   test('Color can be constructed with a hex3 value', () => {
@@ -287,7 +304,32 @@ describe('Color properties', () => {
     const hsv = { h: 360, s: 100, v: 50, a: 1 };
     const color = new IroColor();
     color.hsv = hsv;
-    expect(color.value).toMatchObject(hsv);
+    expect(color.hsv).toMatchObject(hsv);
+  });
+
+  test('Color alpha property is readable', () => {
+    const hsv = { h: 360, s: 100, v: 50, a: .5 };
+    const color = new IroColor(hsv);
+    expect(color.alpha).toEqual(hsv.a);
+  });
+
+  test('Color alpha property is writable', () => {
+    const hsv = { h: 360, s: 100, v: 50, a: .5 };
+    const color = new IroColor(hsv);
+    expect(color.alpha).toEqual(hsv.a);
+  });
+
+  test('Color kelvin property is readable', () => {
+    const hsv = { h: 360, s: 100, v: 50, a: .5 };
+    const color = new IroColor(hsv);
+    expect(color.kelvin).toBeGreaterThan(0);
+  });
+
+  test('Color kelvin property is writable', () => {
+    const hsv = { h: 360, s: 100, v: 50, a: .5 };
+    const color = new IroColor(hsv);
+    color.kelvin = 6600;
+    expect(color.hsv).not.toEqual(hsv);
   });
 
   test('Color rgb property is readable', () => {

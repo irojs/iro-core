@@ -168,13 +168,13 @@ describe('getSliderGradient', () => {
       sliderType: 'hue',
       color: new IroColor()
     })).toMatchObject([
-      ['0',      '#f00'],
-      ['16.666', '#ff0'],
-      ['33.333', '#0f0'],
-      ['50',     '#0ff'],
-      ['66.666', '#00f'],
-      ['83.333', '#f0f'],
-      ['100',    '#f00'],
+      [0,      '#f00'],
+      [16.666, '#ff0'],
+      [33.333, '#0f0'],
+      [50,     '#0ff'],
+      [66.666, '#00f'],
+      [83.333, '#f0f'],
+      [100,    '#f00'],
     ]);
   });
   test('getSliderGradient handles saturation type slider', () => {
@@ -182,15 +182,15 @@ describe('getSliderGradient', () => {
       sliderType: 'saturation',
       color: new IroColor('#f00')
     })).toMatchObject([
-      ['0', 'hsl(0, 0%, 100%)'],
-      ['100', 'hsl(0, 100%, 50%)'],
+      [0, 'hsl(0, 0%, 100%)'],
+      [100, 'hsl(0, 100%, 50%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'saturation',
       color: new IroColor('#000')
     })).toMatchObject([
-      ['0', 'hsl(0, 0%, 0%)'],
-      ['100', 'hsl(0, 0%, 0%)'],
+      [0, 'hsl(0, 0%, 0%)'],
+      [100, 'hsl(0, 0%, 0%)'],
     ]);
   });
   test('getSliderGradient handles value type slider', () => {
@@ -198,22 +198,22 @@ describe('getSliderGradient', () => {
       sliderType: 'value',
       color: new IroColor('#fff')
     })).toMatchObject([
-      ['0', '#000'],
-      ['100', 'hsl(0, 0%, 100%)'],
+      [0, '#000'],
+      [100, 'hsl(0, 0%, 100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#000')
     })).toMatchObject([
-      ['0', '#000'],
-      ['100', 'hsl(0, 0%, 100%)'],
+      [0, '#000'],
+      [100, 'hsl(0, 0%, 100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#f00')
     })).toMatchObject([
-      ['0', '#000'],
-      ['100', 'hsl(0, 100%, 50%)'],
+      [0, '#000'],
+      [100, 'hsl(0, 100%, 50%)'],
     ]);
 
   });

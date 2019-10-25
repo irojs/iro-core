@@ -1,5 +1,9 @@
 import { IroColor, IroColorValue } from './color';
 
+export type LayoutDirection = 'vertical' | 'horizontal' | '';
+
+export type WheelDirection = 'clockwise' | 'anticlockwise' | '';
+
 export interface IroHandleOrigin {
   x: number;
   y: number;
@@ -16,7 +20,8 @@ export interface IroColorPickerOptions {
   borderWidth?: number;
   wheelLightness?: boolean;
   wheelAngle?: number;
-  wheelDirection?: string;
+  wheelDirection?: WheelDirection;
+  layoutDirection?: LayoutDirection;
   sliderHeight?: number;
   sliderMargin?: number;
   padding?: number;
