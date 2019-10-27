@@ -1,6 +1,6 @@
 import { 
   translateWheelAngle,
-  getWheelCenter,
+  getWheelDimensions,
   getWheelHandlePosition,
   getWheelValueFromInput
 } from './wheel';
@@ -90,12 +90,36 @@ describe('translateWheelAngle', () => {
 
 });
 
-describe('getWheelCenter', () => {
+describe('getWheelDimensions', () => {
 
-  test('getWheelCenter returns the correct center point', () => {
-    expect(getWheelCenter({ width: 200 })).toMatchObject({ x: 100, y: 100 });
-    expect(getWheelCenter({ width: 160 })).toMatchObject({ x: 80, y: 80 });
-    expect(getWheelCenter({ width: 128 })).toMatchObject({ x: 64, y: 64 });
+  test('getWheelDimensions returns the correct center point', () => {
+    expect(getWheelDimensions({
+      width: 200,
+      borderWidth: 0
+    })).toMatchObject({
+      cx: 100,
+      cy: 100,
+      radius: 100,
+      width: 200,
+    });
+    expect(getWheelDimensions({
+      width: 160,
+      borderWidth: 8
+    })).toMatchObject({
+      cx: 80,
+      cy: 80,
+      radius: 72,
+      width: 160,
+    });
+    expect(getWheelDimensions({
+      width: 128,
+      borderWidth: 2
+    })).toMatchObject({
+      cx: 64,
+      cy: 64,
+      radius: 62,
+      width: 128,
+    });
   });
   
 });

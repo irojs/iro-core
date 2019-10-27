@@ -6,6 +6,20 @@ export interface WheelProps extends IroColorPickerOptions {
 }
 
 /**
+ * @desc Get the point as the center of the wheel
+ * @param props - wheel props
+ */
+export function getWheelDimensions(props: Partial<WheelProps>) {
+  const rad = props.width / 2;
+  return {
+    width: props.width,
+    radius: rad - props.borderWidth,
+    cx: rad,
+    cy: rad
+  };
+}
+
+/**
  * @desc Translate an angle according to wheelAngle and wheelDirection
  * @param props - wheel props
  * @param angle - input angle
@@ -23,31 +37,19 @@ export function translateWheelAngle(props: Partial<WheelProps>, angle: number) {
 }
 
 /**
- * @desc Get the point as the center of the wheel
- * @param props - wheel props
- */
-export function getWheelCenter(props: Partial<WheelProps>) {
-  const dist = props.width / 2;
-  return {
-    x: dist,
-    y: dist
-  };
-}
-
-/**
  * @desc Get the current handle position
  * @param props - wheel props
  */
 export function getWheelHandlePosition(props: Partial<WheelProps>) {
   const hsv = props.color.hsv;
-  const center = getWheelCenter(props);
+  const { cx, cy } = getWheelDimensions(props);
   const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
   const handleAngle = translateWheelAngle(props, hsv.h) * (Math.PI / 180);
   const handleDist = (hsv.s / 100) * handleRange;
   const direction = props.wheelDirection === 'clockwise' ? -1 : 1;
   return {
-    x: center.x + handleDist * Math.cos(handleAngle) * direction,
-    y: center.y + handleDist * Math.sin(handleAngle) * direction,
+    x: cx + handleDist * Math.cos(handleAngle) * direction,
+    y: cy + handleDist * Math.sin(handleAngle) * direction,
   }
 }
 
@@ -59,10 +61,10 @@ export function getWheelHandlePosition(props: Partial<WheelProps>) {
  * @param bounds - wheel element bounding box
  */
 export function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number, bounds: any) {
-  const center = getWheelCenter(props);
+  const { cx, cy } = getWheelDimensions(props);
   const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
-  x = center.x - (x - bounds.left);
-  y = center.y - (y - bounds.top);
+  x = cx - (x - bounds.left);
+  y = cy - (y - bounds.top);
   // Calculate the hue by converting the angle to radians
   const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (180 / Math.PI));
   // Find the point's distance from the center of the wheel

@@ -4,19 +4,21 @@ export interface WheelProps extends IroColorPickerOptions {
     color: IroColor;
 }
 /**
+ * @desc Get the point as the center of the wheel
+ * @param props - wheel props
+ */
+export declare function getWheelDimensions(props: Partial<WheelProps>): {
+    width: number;
+    radius: number;
+    cx: number;
+    cy: number;
+};
+/**
  * @desc Translate an angle according to wheelAngle and wheelDirection
  * @param props - wheel props
  * @param angle - input angle
  */
 export declare function translateWheelAngle(props: Partial<WheelProps>, angle: number): number;
-/**
- * @desc Get the point as the center of the wheel
- * @param props - wheel props
- */
-export declare function getWheelCenter(props: Partial<WheelProps>): {
-    x: number;
-    y: number;
-};
 /**
  * @desc Get the current handle position
  * @param props - wheel props

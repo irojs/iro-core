@@ -359,7 +359,7 @@ export class IroColor {
   }
 
   public set value(value: number) {
-    this.hsv = { s: value };
+    this.hsv = { v: value };
   }
 
   public get alpha(): number {

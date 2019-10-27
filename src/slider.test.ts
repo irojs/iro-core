@@ -104,13 +104,23 @@ describe('getCurrentSliderValue', () => {
 describe('getSliderValueFromInput', () => {
 
   test('getSliderValueFromInput handles input coords inside the slider', () => {
-    expect(getSliderValueFromInput({}, 100, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 100, 10, {
       left: 0,
       right: 200,
       width: 200,
       height: 36
     })).toEqual(50);
-    expect(getSliderValueFromInput({}, 120, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 120, 10, {
       left: 20,
       right: 200,
       width: 200,
@@ -119,19 +129,34 @@ describe('getSliderValueFromInput', () => {
   });
 
   test('getSliderValueFromInput handles input coords on the edge of the slider', () => {
-    expect(getSliderValueFromInput({}, 0, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 0, 10, {
       left: 0,
       right: 200,
       width: 200,
       height: 36
     })).toEqual(0);
-    expect(getSliderValueFromInput({}, 20, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 20, 10, {
       left: 20,
       right: 200,
       width: 200,
       height: 36
     })).toEqual(0);
-    expect(getSliderValueFromInput({}, 220, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 220, 10, {
       left: 20,
       right: 200,
       width: 200,
@@ -140,19 +165,34 @@ describe('getSliderValueFromInput', () => {
   });
 
   test('getSliderValueFromInput handles input coords outside the slider', () => {
-    expect(getSliderValueFromInput({}, -10, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, -10, 10, {
       left: 0,
       right: 200,
       width: 200,
       height: 36
     })).toEqual(0);
-    expect(getSliderValueFromInput({}, -1000, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, -1000, 10, {
       left: 20,
       right: 200,
       width: 200,
       height: 36
     })).toEqual(0);
-    expect(getSliderValueFromInput({}, 600, 10, {
+    expect(getSliderValueFromInput({
+      width: 200,
+      sliderHeight: 30,
+      borderWidth: 0,
+      handleRadius: 8
+    }, 600, 10, {
       left: 20,
       right: 200,
       width: 200,
@@ -182,15 +222,15 @@ describe('getSliderGradient', () => {
       sliderType: 'saturation',
       color: new IroColor('#f00')
     })).toMatchObject([
-      [0, 'hsl(0, 0%, 100%)'],
-      [100, 'hsl(0, 100%, 50%)'],
+      [0, 'hsl(0,0%,100%)'],
+      [100, 'hsl(0,100%,50%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'saturation',
       color: new IroColor('#000')
     })).toMatchObject([
-      [0, 'hsl(0, 0%, 0%)'],
-      [100, 'hsl(0, 0%, 0%)'],
+      [0, 'hsl(0,0%,0%)'],
+      [100, 'hsl(0,0%,0%)'],
     ]);
   });
   test('getSliderGradient handles value type slider', () => {
@@ -199,21 +239,21 @@ describe('getSliderGradient', () => {
       color: new IroColor('#fff')
     })).toMatchObject([
       [0, '#000'],
-      [100, 'hsl(0, 0%, 100%)'],
+      [100, 'hsl(0,0%,100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#000')
     })).toMatchObject([
       [0, '#000'],
-      [100, 'hsl(0, 0%, 100%)'],
+      [100, 'hsl(0,0%,100%)'],
     ]);
     expect(getSliderGradient({
       sliderType: 'value',
       color: new IroColor('#f00')
     })).toMatchObject([
       [0, '#000'],
-      [100, 'hsl(0, 100%, 50%)'],
+      [100, 'hsl(0,100%,50%)'],
     ]);
 
   });

@@ -2,7 +2,7 @@ import { IroColor } from './color';
 import { IroColorPickerOptions } from './colorPickerOptions';
 
 export type SliderShape = 'bar' | 'circle' | '';
-export type SliderType = 'hue' | 'saturation' | 'value' | 'alpha' | 'temperature' | '';
+export type SliderType = 'hue' | 'saturation' | 'value' | 'alpha' | 'kelvin' | '';
 
 export interface SliderOptions extends IroColorPickerOptions {
   color: IroColor;
@@ -70,7 +70,7 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>) {
   switch (props.sliderType) {
     case 'alpha':
       return hsva.a * 100;
-    case 'temperature':
+    case 'kelvin':
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
       const percent = ((props.color.kelvin - minTemperature) / temperatureRange) * 100;
@@ -105,7 +105,7 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
   handlePos = Math.max(Math.min(handlePos, handleRange), 0);
   const percent = Math.round((100 / handleRange) * handlePos);
   switch (props.sliderType) {
-    case 'temperature':
+    case 'kelvin':
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
       return minTemperature + temperatureRange * (percent / 100);
@@ -145,10 +145,10 @@ export function getSliderGradient(props: Partial<SliderOptions>) {
     case 'alpha':
       const rgb = props.color.rgb;
       return [
-        [0, `rgba(${ rgb.r }, ${ rgb.g }, ${ rgb.b }, 0)`],
-        [100, `rgba(${ rgb.r }, ${ rgb.g }, ${ rgb.b }, 1)`],
+        [0, `rgba(${ rgb.r },${ rgb.g },${ rgb.b },0)`],
+        [100, `rgb(${ rgb.r },${ rgb.g },${ rgb.b })`],
       ]
-    case 'temperature':
+    case 'kelvin':
       const stops = [];
       const min = props.minTemperature;
       const max = props.maxTemperature;
@@ -173,15 +173,15 @@ export function getSliderGradient(props: Partial<SliderOptions>) {
       const noSat = IroColor.hsvToHsl({h: hsv.h, s: 0, v: hsv.v});
       const fullSat = IroColor.hsvToHsl({h: hsv.h, s: 100, v: hsv.v});
       return [
-        [0, `hsl(${noSat.h}, ${noSat.s}%, ${noSat.l}%)`],
-        [100, `hsl(${fullSat.h}, ${fullSat.s}%, ${fullSat.l}%)`]
+        [0, `hsl(${noSat.h},${noSat.s}%,${noSat.l}%)`],
+        [100, `hsl(${fullSat.h},${fullSat.s}%,${fullSat.l}%)`]
       ];
     case 'value':
     default:
       const hsl = IroColor.hsvToHsl({h: hsv.h, s: hsv.s, v: 100});
       return [
         [0, '#000'],
-        [100, `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`]
+        [100, `hsl(${hsl.h},${hsl.s}%,${hsl.l}%)`]
       ];
   }
 }

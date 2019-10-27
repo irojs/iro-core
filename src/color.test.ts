@@ -301,7 +301,7 @@ describe('Color properties', () => {
   });
 
   test('Color hsv property is writable', () => {
-    const hsv = { h: 360, s: 100, v: 50, a: 1 };
+    const hsv = { h: 360, s: 100, v: 50 };
     const color = new IroColor();
     color.hsv = hsv;
     expect(color.hsv).toMatchObject(hsv);
