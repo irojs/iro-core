@@ -1,11 +1,12 @@
 {
-  "name": "iro-core",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@irojs/iro-core",
+  "version": "0.0.4",
+  "description": "Core functionality for iro.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "main": "dist/iro-core.js",
   "module": "dist/iro-core.es.js",
+  "private": false,
   "devDependencies": {
     "@types/jest": "^24.0.19",
     "jest": "^24.9.0",
@@ -13,12 +14,12 @@
     "ts-jest": "^24.1.0"
   },
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "microbundle",
     "dev": "microbundle watch",
     "test": "jest"
   },
   "files": [
-    "src",
     "dist"
   ],
   "keywords": [
@@ -37,12 +38,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaames/iro-core.git"
+    "url": "git+https://github.com/irojs/iro-core.git"
   },
   "author": "James Daniel <mail@jamesdaniel.dev>",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/jaames/iro-core/issues"
+    "url": "https://github.com/irojs/iro-core/issues"
   },
-  "homepage": "https://iro.js.org"
+  "homepage": "https://github.com/irojs/iro-core"
 }

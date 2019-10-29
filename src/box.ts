@@ -11,7 +11,7 @@ export interface BoxOptions extends IroColorPickerOptions {
  */
 export function getBoxStyles(props: Partial<BoxOptions>) {
   return {
-    [props.layoutDirection === 'vertical' ? 'marginLeft' : 'marginTop']: props.sliderMargin
+    [props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop']: props.sliderMargin
   }
 }
 

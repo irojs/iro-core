@@ -25,7 +25,7 @@ export const sliderDefaultOptions = {
  */
 export function getSliderStyles(props: Partial<SliderOptions>) {
   return {
-    [props.layoutDirection === 'vertical' ? 'marginLeft' : 'marginTop']: props.sliderMargin
+    [props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop']: props.sliderMargin
   }
 }
 
@@ -34,10 +34,10 @@ export function getSliderStyles(props: Partial<SliderOptions>) {
  * @param props - slider props
  */
 export function getSliderDimensions(props: Partial<SliderOptions>) {
-  let { width, sliderHeight, borderWidth, handleRadius, padding, sliderShape } = props;
-  const isVertical = props.layoutDirection === 'vertical';
-  // automatically calculate sliderHeight if its not defined
-  sliderHeight = sliderHeight ? sliderHeight : padding * 2 + handleRadius * 2 + borderWidth * 2;
+  let { width, sliderSize: sliderSize, borderWidth, handleRadius, padding, sliderShape } = props;
+  const ishorizontal = props.layoutDirection === 'horizontal';
+  // automatically calculate sliderSize if its not defined
+  sliderSize = sliderSize ? sliderSize : padding * 2 + handleRadius * 2 + borderWidth * 2;
   if (sliderShape === 'circle') {
     return {
       handleStart: props.padding + props.handleRadius,
@@ -50,13 +50,13 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
     }
   } else {
     return {
-      handleStart: sliderHeight / 2,
-      handleRange: width - sliderHeight,
-      radius: sliderHeight / 2,
+      handleStart: sliderSize / 2,
+      handleRange: width - sliderSize,
+      radius: sliderSize / 2,
       x: 0,
       y: 0,
-      width: isVertical ? sliderHeight : width,
-      height: isVertical ? width : sliderHeight,
+      width: ishorizontal ? sliderSize : width,
+      height: ishorizontal ? width : sliderSize,
     }
   }
 }
@@ -96,7 +96,7 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>) {
 export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number, bounds: any) {
   const { handleRange, handleStart } = getSliderDimensions(props);
   let handlePos;
-  if (props.layoutDirection === 'vertical') {
+  if (props.layoutDirection === 'horizontal') {
     handlePos = -1 * (y - bounds.top) + handleRange + handleStart;
   } else {
     handlePos = x - (bounds.left + handleStart);
@@ -124,14 +124,14 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
  */
 export function getSliderHandlePosition(props: Partial<SliderOptions>) {
   const { width, height, handleRange, handleStart } = getSliderDimensions(props);
-  const isVertical = props.layoutDirection === 'vertical';
+  const ishorizontal = props.layoutDirection === 'horizontal';
   const sliderValue = getCurrentSliderValue(props);
-  const midPoint = isVertical ? width / 2 : height / 2;
+  const midPoint = ishorizontal ? width / 2 : height / 2;
   let handlePos = handleStart + (sliderValue / 100) * handleRange;
-  if (isVertical) {
+  if (ishorizontal) {
     handlePos = -1 * handlePos + handleRange + handleStart * 2;
   } 
-  return {x: isVertical ? midPoint : handlePos, y: isVertical ? handlePos : midPoint};
+  return {x: ishorizontal ? midPoint : handlePos, y: ishorizontal ? handlePos : midPoint};
 }
 
 /**
@@ -191,11 +191,11 @@ export function getSliderGradient(props: Partial<SliderOptions>) {
  * @param props - slider props
  */
 export function getSliderGradientCoords(props: Partial<SliderOptions>) {
-  const isVertical = props.layoutDirection === 'vertical';
+  const ishorizontal = props.layoutDirection === 'horizontal';
   return {
     x1: '0%',
-    y1: isVertical ? '100%' : '0%',
-    x2: isVertical ? '0%' : '100%',
+    y1: ishorizontal ? '100%' : '0%',
+    x2: ishorizontal ? '0%' : '100%',
     y2: '0%'
   }
 }
