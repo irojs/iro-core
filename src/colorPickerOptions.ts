@@ -4,17 +4,12 @@ export type LayoutDirection = 'vertical' | 'horizontal' | '';
 
 export type WheelDirection = 'clockwise' | 'anticlockwise' | '';
 
-export interface IroHandleOrigin {
-  x: number;
-  y: number;
-}
-
 export interface IroColorPickerOptions {
   width?: number;
   height?: number;
   handleRadius?: number;
   handleSvg?: string;
-  handleOrigin?: IroHandleOrigin;
+  handleProps?: any;
   color?: IroColorValue;
   borderColor?: string;
   borderWidth?: number;
@@ -22,7 +17,7 @@ export interface IroColorPickerOptions {
   wheelAngle?: number;
   wheelDirection?: WheelDirection;
   layoutDirection?: LayoutDirection;
-  sliderHeight?: number;
+  sliderSize?: number;
   sliderMargin?: number;
   padding?: number;
 }
@@ -32,14 +27,15 @@ export const iroColorPickerOptionDefaults: IroColorPickerOptions = {
   height: 300,
   handleRadius: 8,
   handleSvg: null,
-  handleOrigin: {x: 0, y: 0},
+  handleProps: {x: 0, y: 0},
   color: '#fff',
   borderColor: '#fff',
   borderWidth: 0,
   wheelLightness: true,
   wheelAngle: 0,
   wheelDirection: 'anticlockwise',
-  sliderHeight: null,
+  layoutDirection: 'vertical',
+  sliderSize: null,
   sliderMargin: 12,
   padding: 6,
 }
