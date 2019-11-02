@@ -54,11 +54,11 @@ describe('translateWheelAngle', () => {
     expect(translateWheelAngle({
       wheelAngle: 0,
       wheelDirection: 'anticlockwise',
-    }, 60)).toEqual(300);
+    }, 60)).toEqual(60);
     expect(translateWheelAngle({
       wheelAngle: 0,
       wheelDirection: 'anticlockwise',
-    }, 90)).toEqual(270);
+    }, 90)).toEqual(90);
     expect(translateWheelAngle({
       wheelAngle: 0,
       wheelDirection: 'anticlockwise',
@@ -77,7 +77,7 @@ describe('translateWheelAngle', () => {
     expect(translateWheelAngle({
       wheelAngle: 100,
       wheelDirection: 'anticlockwise',
-    }, 80)).toEqual(20);
+    }, 80)).toEqual(180);
     expect(translateWheelAngle({
       wheelAngle: 180,
       wheelDirection: 'anticlockwise',
@@ -131,11 +131,11 @@ describe('getWheelHandlePosition', () => {
       color: new IroColor('#f00'),
       width: 200,
       borderWidth: 0,
-      padding: 8,
-      handleRadius: 8,
+      padding: 0,
+      handleRadius: 0,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 16, y: 100 });
+    }).y).toBeCloseTo(100)
     expect(getWheelHandlePosition({
       color: new IroColor({ h: 180, s: 50, v: 50 }),
       width: 200,
@@ -144,7 +144,7 @@ describe('getWheelHandlePosition', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 142, y: 100 });
+    }).x).toBeCloseTo(58)
     expect(getWheelHandlePosition({
       color: new IroColor({ h: 180, s: 25, v: 50 }),
       width: 200,
@@ -153,7 +153,7 @@ describe('getWheelHandlePosition', () => {
       handleRadius: 20,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 120, y: 100 });
+    })).toMatchObject({ x: 80, y: 100 });
   });
 
   test('getWheelHandlePosition returns the midpoint when saturation is 0', () => {

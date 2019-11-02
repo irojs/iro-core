@@ -18,7 +18,7 @@ export declare function getWheelDimensions(props: Partial<WheelProps>): {
  * @param props - wheel props
  * @param angle - input angle
  */
-export declare function translateWheelAngle(props: Partial<WheelProps>, angle: number): number;
+export declare function translateWheelAngle(props: Partial<WheelProps>, angle: number, invert?: boolean): number;
 /**
  * @desc Get the current handle position
  * @param props - wheel props
