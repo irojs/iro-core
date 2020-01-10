@@ -20,10 +20,11 @@ export declare function getWheelDimensions(props: Partial<WheelProps>): {
  */
 export declare function translateWheelAngle(props: Partial<WheelProps>, angle: number, invert?: boolean): number;
 /**
- * @desc Get the current handle position
+ * @desc Get the current handle position for a given color
  * @param props - wheel props
+ * @param color
  */
-export declare function getWheelHandlePosition(props: Partial<WheelProps>): {
+export declare function getWheelHandlePosition(props: Partial<WheelProps>, color: IroColor): {
     x: number;
     y: number;
 };

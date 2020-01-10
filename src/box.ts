@@ -51,12 +51,13 @@ export function getBoxValueFromInput(props: Partial<BoxOptions>, x: number, y: n
 }
 
 /**
- * @desc Get the current box handle position
+ * @desc Get the current box handle position for a given color
  * @param props - box props
+ * @param color
  */
-export function getBoxHandlePosition(props: Partial<BoxOptions>) {
+export function getBoxHandlePosition(props: Partial<BoxOptions>, color: IroColor) {
   const { width, height, radius } = getBoxDimensions(props);
-  const hsv = props.color.hsv;
+  const hsv = color.hsv;
   const handleStart = radius;
   const handleRangeX = width - radius * 2;
   const handleRangeY = height - radius * 2;
@@ -69,9 +70,10 @@ export function getBoxHandlePosition(props: Partial<BoxOptions>) {
 /**
  * @desc Get the gradient stops for a box
  * @param props - box props
+ * @param color
  */
-export function getBoxGradients(props: Partial<BoxOptions>) {
-  const hue = props.color.hue;
+export function getBoxGradients(props: Partial<BoxOptions>, color: IroColor) {
+  const hue = color.hue;
   return [
     // saturation gradient
     [

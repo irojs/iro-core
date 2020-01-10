@@ -99,6 +99,10 @@ export class IroColor {
   // internal color value storage
   private $: HsvColor;
   private onChange: Function;
+  private initialValue: HsvColor;
+
+  public index: number;
+
   /**
     * @constructor Color object
     * @param value - initial color value
@@ -109,6 +113,7 @@ export class IroColor {
     if (value) this.set(value);
     // The watch callback function for this Color will be stored here
     this.onChange = onChange;
+    this.initialValue = { ...this.$ }; // copy initial value
   }
 
   /**
@@ -157,10 +162,24 @@ export class IroColor {
   }
 
   /**
+   * @desc Reset color back to its initial value
+   */
+  public reset() {
+    this.hsva = this.initialValue;
+  }
+
+  /**
     * @desc make new Color instance with the same value as this one
   */
   public clone() {
     return new IroColor(this);
+  }
+
+  /**
+   * @desc remove color onChange
+   */
+  public unbind() {
+    this.onChange = undefined;
   }
 
   /**

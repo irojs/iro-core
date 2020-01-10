@@ -8,6 +8,7 @@ export interface IroColorPickerOptions {
     handleSvg?: string;
     handleProps?: any;
     color?: IroColorValue;
+    colors?: IroColorValue[];
     borderColor?: string;
     borderWidth?: number;
     wheelLightness?: boolean;

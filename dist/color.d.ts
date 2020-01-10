@@ -20,6 +20,8 @@ export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | 
 export declare class IroColor {
     private $;
     private onChange;
+    private initialValue;
+    index: number;
     /**
       * @constructor Color object
       * @param value - initial color value
@@ -38,9 +40,17 @@ export declare class IroColor {
     */
     setChannel(format: string, channel: string, value: number): void;
     /**
+     * @desc Reset color back to its initial value
+     */
+    reset(): void;
+    /**
       * @desc make new Color instance with the same value as this one
     */
     clone(): IroColor;
+    /**
+     * @desc remove color onChange
+     */
+    unbind(): void;
     /**
       * @desc Convert hsv object to rgb
       * @param hsv - hsv color object

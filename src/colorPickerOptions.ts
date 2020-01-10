@@ -11,6 +11,7 @@ export interface IroColorPickerOptions {
   handleSvg?: string;
   handleProps?: any;
   color?: IroColorValue;
+  colors?: IroColorValue[];
   borderColor?: string;
   borderWidth?: number;
   wheelLightness?: boolean;
@@ -29,6 +30,7 @@ export const iroColorPickerOptionDefaults: IroColorPickerOptions = {
   handleSvg: null,
   handleProps: {x: 0, y: 0},
   color: '#fff',
+  colors: [],
   borderColor: '#fff',
   borderWidth: 0,
   wheelLightness: true,

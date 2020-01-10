@@ -62,18 +62,19 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
 }
 
 /**
- * @desc Get the current slider value as a percentage
+ * @desc Get the current slider value for a given color, as a percentage
  * @param props - slider props
+ * @param color
  */
-export function getCurrentSliderValue(props: Partial<SliderOptions>) {
-  const hsva = props.color.hsva;
+export function getCurrentSliderValue(props: Partial<SliderOptions>, color: IroColor) {
+  const hsva = color.hsva;
   switch (props.sliderType) {
     case 'alpha':
       return hsva.a * 100;
     case 'kelvin':
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
-      const percent = ((props.color.kelvin - minTemperature) / temperatureRange) * 100;
+      const percent = ((color.kelvin - minTemperature) / temperatureRange) * 100;
       // clmap percentage
       return Math.max(0, Math.min(percent, 100));
     case 'hue':
@@ -119,13 +120,14 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
 }
 
 /**
- * @desc Get the current slider position
+ * @desc Get the current handle position for a given color
  * @param props - slider props
+ * @param color
  */
-export function getSliderHandlePosition(props: Partial<SliderOptions>) {
+export function getSliderHandlePosition(props: Partial<SliderOptions>, color: IroColor) {
   const { width, height, handleRange, handleStart } = getSliderDimensions(props);
   const ishorizontal = props.layoutDirection === 'horizontal';
-  const sliderValue = getCurrentSliderValue(props);
+  const sliderValue = getCurrentSliderValue(props, color);
   const midPoint = ishorizontal ? width / 2 : height / 2;
   let handlePos = handleStart + (sliderValue / 100) * handleRange;
   if (ishorizontal) {
@@ -137,13 +139,14 @@ export function getSliderHandlePosition(props: Partial<SliderOptions>) {
 /**
  * @desc Get the gradient stops for a slider
  * @param props - slider props
+ * @param color
  */
-export function getSliderGradient(props: Partial<SliderOptions>) {
-  const hsv = props.color.hsv;
+export function getSliderGradient(props: Partial<SliderOptions>, color: IroColor) {
+  const hsv = color.hsv;
 
   switch (props.sliderType) {
     case 'alpha':
-      const rgb = props.color.rgb;
+      const rgb = color.rgb;
       return [
         [0, `rgba(${ rgb.r },${ rgb.g },${ rgb.b },0)`],
         [100, `rgb(${ rgb.r },${ rgb.g },${ rgb.b })`],

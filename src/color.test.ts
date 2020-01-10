@@ -395,6 +395,22 @@ describe('Color methods', () => {
     expect(color.hsv).toMatchObject(cloneColor.hsv);
   });
 
+  test('Color reset method successfully resets the color to its initial value', () => {
+    const color = new IroColor('#f00');
+    color.hexString = '#fff';
+    expect(color.rgb).toMatchObject({r: 255, g: 255, b: 255});
+    color.reset();
+    expect(color.rgb).toMatchObject({r: 255, g: 0, b: 0});
+  });
+
+  test('Color unbind method clears the onChange callback', () => {
+    const mockCallback = jest.fn();
+    const color = new IroColor('#f00', mockCallback);
+    color.unbind();
+    color.hexString = '#fff';
+    expect(mockCallback).not.toHaveBeenCalled();
+  });
+
   // set() is also used internally by the iro.Color parser, 
   // so the constructor tests already make that this method parses different colors properly
   test('Color set method successfully updates the color value', () => {

@@ -35,29 +35,26 @@ describe('getBoxHandlePosition', () => {
 
   test('getBoxHandlePosition returns correct handle position', () => {
     expect(getBoxHandlePosition({
-      color: new IroColor({ h: 0, s: 0, v: 100 }),
       width: 300,
       padding: 8,
       handleRadius: 8
-    })).toMatchObject({
+    }, new IroColor({ h: 0, s: 0, v: 100 }))).toMatchObject({
       x: 16,
       y: 16
     });
     expect(getBoxHandlePosition({
-      color: new IroColor({ h: 0, s: 50, v: 50 }),
       width: 300,
       padding: 8,
       handleRadius: 8
-    })).toMatchObject({
+    }, new IroColor({ h: 0, s: 50, v: 50 }))).toMatchObject({
       x: 150,
       y: 150
     });
     expect(getBoxHandlePosition({
-      color: new IroColor({ h: 0, s: 100, v: 0 }),
       width: 300,
       padding: 8,
       handleRadius: 8
-    })).toMatchObject({
+    }, new IroColor({ h: 0, s: 100, v: 0 }))).toMatchObject({
       x: 284,
       y: 284
     });

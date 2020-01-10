@@ -128,53 +128,48 @@ describe('getWheelHandlePosition', () => {
 
   test('getWheelHandlePosition returns the correct handle coords', () => {
     expect(getWheelHandlePosition({
-      color: new IroColor('#f00'),
       width: 200,
       borderWidth: 0,
       padding: 0,
       handleRadius: 0,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }).y).toBeCloseTo(100)
+    }, new IroColor('#f00')).y).toBeCloseTo(100)
     expect(getWheelHandlePosition({
-      color: new IroColor({ h: 180, s: 50, v: 50 }),
       width: 200,
       borderWidth: 0,
       padding: 8,
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }).x).toBeCloseTo(58)
+    }, new IroColor({ h: 180, s: 50, v: 50 })).x).toBeCloseTo(58)
     expect(getWheelHandlePosition({
-      color: new IroColor({ h: 180, s: 25, v: 50 }),
       width: 200,
       borderWidth: 0,
       padding: 0,
       handleRadius: 20,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 80, y: 100 });
+    }, new IroColor({ h: 180, s: 25, v: 50 }))).toMatchObject({ x: 80, y: 100 });
   });
 
   test('getWheelHandlePosition returns the midpoint when saturation is 0', () => {
     expect(getWheelHandlePosition({
-      color: new IroColor('#000'),
       width: 200,
       borderWidth: 0,
       padding: 8,
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 100, y: 100 });
+    }, new IroColor('#000'))).toMatchObject({ x: 100, y: 100 });
     expect(getWheelHandlePosition({
-      color: new IroColor('#fff'),
       width: 200,
       borderWidth: 0,
       padding: 8,
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    })).toMatchObject({ x: 100, y: 100 });
+    }, new IroColor('#fff'))).toMatchObject({ x: 100, y: 100 });
   });
   
 });

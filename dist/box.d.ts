@@ -31,15 +31,17 @@ export declare function getBoxValueFromInput(props: Partial<BoxOptions>, x: numb
     v: number;
 };
 /**
- * @desc Get the current box handle position
+ * @desc Get the current box handle position for a given color
  * @param props - box props
+ * @param color
  */
-export declare function getBoxHandlePosition(props: Partial<BoxOptions>): {
+export declare function getBoxHandlePosition(props: Partial<BoxOptions>, color: IroColor): {
     x: number;
     y: number;
 };
 /**
  * @desc Get the gradient stops for a box
  * @param props - box props
+ * @param color
  */
-export declare function getBoxGradients(props: Partial<BoxOptions>): (string | number)[][][];
+export declare function getBoxGradients(props: Partial<BoxOptions>, color: IroColor): (string | number)[][][];

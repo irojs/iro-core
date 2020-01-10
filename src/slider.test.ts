@@ -60,55 +60,46 @@ describe('getCurrentSliderValue', () => {
   test('getCurrentSliderValue handles hue type slider', () => {
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'hue',
-      color: new IroColor({h: 0, s: 100, v: 0})
-    })).toBe(0);
+      sliderType: 'hue'
+    }, new IroColor({h: 0, s: 100, v: 0}))).toBe(0);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'hue',
-      color: new IroColor({h: 180, s: 100, v: 0})
-    })).toBe(50);
+      sliderType: 'hue'
+    }, new IroColor({h: 180, s: 100, v: 0}))).toBe(50);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'hue',
-      color: new IroColor({h: 360, s: 100, v: 0})
-    })).toBe(100);
+      sliderType: 'hue'
+    }, new IroColor({h: 360, s: 100, v: 0}))).toBe(100);
   });
 
   test('getCurrentSliderValue handles saturation type slider', () => {
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'saturation',
-      color: new IroColor({h: 300, s: 0, v: 0})
-    })).toBe(0);
+      sliderType: 'saturation'
+    }, new IroColor({h: 300, s: 0, v: 0}))).toBe(0);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'saturation',
-      color: new IroColor({h: 300, s: 50, v: 0})
-    })).toBe(50);
+      sliderType: 'saturation'
+    }, new IroColor({h: 300, s: 50, v: 0}))).toBe(50);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'saturation',
-      color: new IroColor({h: 300, s: 100, v: 0})
-    })).toBe(100);
+      sliderType: 'saturation'
+    }, new IroColor({h: 300, s: 100, v: 0}))).toBe(100);
   });
 
   test('getCurrentSliderValue handles value type slider', () => {
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor({h: 300, s: 100, v: 0})
-    })).toBe(0);
+      sliderType: 'value'
+    }, new IroColor({h: 300, s: 100, v: 0}))).toBe(0);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor({h: 300, s: 100, v: 50})
-    })).toBe(50);
+      sliderType: 'value'
+    }, new IroColor({h: 300, s: 100, v: 50}))).toBe(50);
     expect(getCurrentSliderValue({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor({h: 300, s: 100, v: 100})
-    })).toBe(100);
+      sliderType: 'value'
+    }, new IroColor({h: 300, s: 100, v: 100}))).toBe(100);
   });
 
 });
@@ -226,9 +217,8 @@ describe('getSliderGradient', () => {
   test('getSliderGradient handles hue type slider', () => {
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'hue',
-      color: new IroColor()
-    })).toMatchObject([
+      sliderType: 'hue'
+    }, new IroColor())).toMatchObject([
       [0,      '#f00'],
       [16.666, '#ff0'],
       [33.333, '#0f0'],
@@ -241,17 +231,15 @@ describe('getSliderGradient', () => {
   test('getSliderGradient handles saturation type slider', () => {
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'saturation',
-      color: new IroColor('#f00')
-    })).toMatchObject([
+      sliderType: 'saturation'
+    },  new IroColor('#f00'))).toMatchObject([
       [0, 'hsl(0,0%,100%)'],
       [100, 'hsl(0,100%,50%)'],
     ]);
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'saturation',
-      color: new IroColor('#000')
-    })).toMatchObject([
+      sliderType: 'saturation'
+    }, new IroColor('#000'))).toMatchObject([
       [0, 'hsl(0,0%,0%)'],
       [100, 'hsl(0,0%,0%)'],
     ]);
@@ -259,25 +247,22 @@ describe('getSliderGradient', () => {
   test('getSliderGradient handles value type slider', () => {
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor('#fff')
-    })).toMatchObject([
+      sliderType: 'value'
+    }, new IroColor('#fff'))).toMatchObject([
       [0, '#000'],
       [100, 'hsl(0,0%,100%)'],
     ]);
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor('#000')
-    })).toMatchObject([
+      sliderType: 'value'
+    }, new IroColor('#000'))).toMatchObject([
       [0, '#000'],
       [100, 'hsl(0,0%,100%)'],
     ]);
     expect(getSliderGradient({
       layoutDirection: 'vertical',
-      sliderType: 'value',
-      color: new IroColor('#f00')
-    })).toMatchObject([
+      sliderType: 'value'
+    }, new IroColor('#f00'))).toMatchObject([
       [0, '#000'],
       [100, 'hsl(0,100%,50%)'],
     ]);
@@ -289,27 +274,24 @@ describe('getSliderHandlePosition', () => {
   test('getSliderHandlePosition gets correct handle position', () => {
     expect(getSliderHandlePosition({
       layoutDirection: 'vertical',
-      color: new IroColor('#f00'),
       width: 300,
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    })).toMatchObject({x: 285, y: 15});
+    }, new IroColor('#f00'))).toMatchObject({x: 285, y: 15});
     expect(getSliderHandlePosition({
       layoutDirection: 'vertical',
-      color: new IroColor('#000'),
       width: 300,
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    })).toMatchObject({x: 15, y: 15});
+    }, new IroColor('#000'))).toMatchObject({x: 15, y: 15});
     expect(getSliderHandlePosition({
       layoutDirection: 'vertical',
-      color: new IroColor({h: 0, s: 50, v: 50}),
       width: 300,
       sliderSize: 40,
       borderWidth: 0,
       handleRadius: 8
-    })).toMatchObject({x: 150, y: 20});
+    }, new IroColor({h: 0, s: 50, v: 50}))).toMatchObject({x: 150, y: 20});
   });
 });

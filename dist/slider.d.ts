@@ -48,10 +48,11 @@ export declare function getSliderDimensions(props: Partial<SliderOptions>): {
     cy?: undefined;
 };
 /**
- * @desc Get the current slider value as a percentage
+ * @desc Get the current slider value for a given color, as a percentage
  * @param props - slider props
+ * @param color
  */
-export declare function getCurrentSliderValue(props: Partial<SliderOptions>): number;
+export declare function getCurrentSliderValue(props: Partial<SliderOptions>, color: IroColor): number;
 /**
  * @desc Get the current slider value from user input
  * @param props - slider props
@@ -61,18 +62,20 @@ export declare function getCurrentSliderValue(props: Partial<SliderOptions>): nu
  */
 export declare function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number, bounds: any): number;
 /**
- * @desc Get the current slider position
+ * @desc Get the current handle position for a given color
  * @param props - slider props
+ * @param color
  */
-export declare function getSliderHandlePosition(props: Partial<SliderOptions>): {
+export declare function getSliderHandlePosition(props: Partial<SliderOptions>, color: IroColor): {
     x: number;
     y: number;
 };
 /**
  * @desc Get the gradient stops for a slider
  * @param props - slider props
+ * @param color
  */
-export declare function getSliderGradient(props: Partial<SliderOptions>): any[];
+export declare function getSliderGradient(props: Partial<SliderOptions>, color: IroColor): any[];
 /**
  * @desc Get the gradient coords for a slider
  * @param props - slider props

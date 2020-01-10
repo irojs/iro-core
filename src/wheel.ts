@@ -1,5 +1,5 @@
 import { IroColorPickerOptions } from './colorPickerOptions';
-import { IroColor } from './color';
+import { IroColor, IroColorValue } from './color';
 
 export interface WheelProps extends IroColorPickerOptions {
   color: IroColor;
@@ -39,11 +39,12 @@ export function translateWheelAngle(props: Partial<WheelProps>, angle: number, i
 }
 
 /**
- * @desc Get the current handle position
+ * @desc Get the current handle position for a given color
  * @param props - wheel props
+ * @param color
  */
-export function getWheelHandlePosition(props: Partial<WheelProps>) {
-  const hsv = props.color.hsv;
+export function getWheelHandlePosition(props: Partial<WheelProps>, color: IroColor) {
+  const hsv = color.hsv;
   const { cx, cy } = getWheelDimensions(props);
   const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
   const handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (Math.PI / 180);

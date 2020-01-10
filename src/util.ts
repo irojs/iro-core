@@ -1,3 +1,5 @@
+import { IroColorPickerOptions } from './colorPickerOptions';
+
 // Keep track of html <base> elements for resolveSvgUrl
 // getElementsByTagName returns a live HTMLCollection, which stays in sync with the DOM tree
 // So it only needs to be called once
@@ -41,4 +43,23 @@ export function getSvgArcPath(cx: number, cy: number, radius: number, startAngle
   const x2 = cx + radius * Math.cos(startAngle);
   const y2 = cy + radius * Math.sin(startAngle);
   return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${x2} ${y2}`;
+}
+
+/**
+ * @desc Given a specifc (x, y) position, test if there's a handle there and return its index, else return null.
+ *       This is used for components like the box and wheel which support multiple handles when multicolor is active
+ * @props x - point x position
+ * @props y - point y position
+ * @props handlePositions - array of {x, y} coords for each handle
+ */
+export function getHandleAtPoint(props: Partial<IroColorPickerOptions>, x: number, y: number, handlePositions: {x: number, y: number}[]) {
+  for (let i = 0; i < handlePositions.length; i++) {
+    const dX = handlePositions[i].x - x;
+    const dY = handlePositions[i].y - y;
+    const dist = Math.sqrt(dX * dX + dY * dY);
+    if (dist < props.handleRadius) {
+      return i;
+    }
+  }
+  return null;
 }
