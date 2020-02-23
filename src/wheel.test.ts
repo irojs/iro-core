@@ -184,7 +184,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 100, 100, { left: 0, top: 0 })).toMatchObject({ h: 180, s: 0 });
+    }, 100, 100)).toMatchObject({ h: 180, s: 0 });
   });
 
   test('getWheelValueFromInput handles input coords inside wheel', () => {
@@ -195,7 +195,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 20, 80, { left: 0, top: 0 })).toMatchObject({ h: 194, s: 98 });
+    }, 20, 80)).toMatchObject({ h: 194, s: 98 });
     expect(getWheelValueFromInput({
       width: 200,
       borderWidth: 0,
@@ -203,7 +203,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 45, 45, { left: 0, top: 0 })).toMatchObject({ h: 225, s: 93 });
+    }, 45, 45)).toMatchObject({ h: 225, s: 93 });
     expect(getWheelValueFromInput({
       width: 200,
       borderWidth: 0,
@@ -211,7 +211,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 90, 110, { left: 0, top: 0 })).toMatchObject({ h: 135, s: 17 });
+    }, 90, 110)).toMatchObject({ h: 135, s: 17 });
   });
 
   test('getWheelValueFromInput handles input coords outside wheel', () => {
@@ -222,7 +222,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 300, 100, { left: 0, top: 0 })).toMatchObject({ h: 0, s: 100 });
+    }, 300, 100)).toMatchObject({ h: 0, s: 100 });
     expect(getWheelValueFromInput({
       width: 200,
       borderWidth: 0,
@@ -230,7 +230,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, -45, -45, { left: 0, top: 0 })).toMatchObject({ h: 225, s: 100 });
+    }, -45, -45)).toMatchObject({ h: 225, s: 100 });
     expect(getWheelValueFromInput({
       width: 200,
       borderWidth: 0,
@@ -238,7 +238,7 @@ describe('getWheelValueFromInput', () => {
       handleRadius: 8,
       wheelAngle: 0,
       wheelDirection: 'clockwise',
-    }, 300, 220, { left: 0, top: 0 })).toMatchObject({ h: 31, s: 100 });
+    }, 300, 220)).toMatchObject({ h: 31, s: 100 });
   });
   
 });

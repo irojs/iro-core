@@ -33,17 +33,14 @@ export function getBoxDimensions(props: Partial<BoxOptions>) {
  * @param props - box props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - box element bounding box
  */
-export function getBoxValueFromInput(props: Partial<BoxOptions>, x: number, y: number, bounds: any) {
+export function getBoxValueFromInput(props: Partial<BoxOptions>, x: number, y: number) {
   const { width, height, radius } = getBoxDimensions(props);
   const handleStart = radius;
   const handleRangeX = width - radius * 2;
   const handleRangeY = height - radius * 2;
-  x -= (bounds.left + handleStart);
-  y -= (bounds.top + handleStart);
-  const percentX = (x / handleRangeX) * 100;
-  const percentY = (y / handleRangeY) * 100;
+  const percentX = ((x - handleStart) / handleRangeX) * 100;
+  const percentY = ((y - handleStart) / handleRangeY) * 100;
   return {
     s: Math.max(0, Math.min(percentX, 100)),
     v: Math.max(0, Math.min(100 - percentY, 100))

@@ -61,13 +61,12 @@ export function getWheelHandlePosition(props: Partial<WheelProps>, color: IroCol
  * @param props - wheel props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - wheel element bounding box
  */
-export function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number, bounds: any) {
+export function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number) {
   const { cx, cy } = getWheelDimensions(props);
   const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
-  x = cx - (x - bounds.left);
-  y = cy - (y - bounds.top);
+  x = cx - x;
+  y = cy - y;
   // Calculate the hue by converting the angle to radians
   const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (180 / Math.PI));
   // Find the point's distance from the center of the wheel

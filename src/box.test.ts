@@ -70,10 +70,7 @@ describe('getBoxValueFromInput', () => {
       borderWidth: 0,
       padding: 8,
       handleRadius: 8
-    }, 100, 100, {
-      left: 0,
-      top: 0,
-    })).toEqual({ v: 50, s: 50 });
+    }, 100, 100)).toEqual({ v: 50, s: 50 });
   });
 
   test('getBoxValueFromInput handles input coords on the edge of the box', () => {
@@ -82,10 +79,7 @@ describe('getBoxValueFromInput', () => {
       borderWidth: 0,
       padding: 8,
       handleRadius: 8
-    }, 184, 16, {
-      left: 0,
-      top: 0,
-    })).toEqual({ v: 100, s: 100 });
+    }, 184, 16)).toEqual({ v: 100, s: 100 });
   });
 
   test('getBoxValueFromInput handles input coords outside the box', () => {
@@ -94,10 +88,7 @@ describe('getBoxValueFromInput', () => {
       borderWidth: 0,
       padding: 8,
       handleRadius: 8
-    }, 300, -10, {
-      left: 0,
-      top: 0,
-    })).toEqual({ v: 100, s: 100 });
+    }, 300, -10)).toEqual({ v: 100, s: 100 });
   });
 
 });

@@ -1,6 +1,6 @@
 {
   "name": "@irojs/iro-core",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Core functionality for iro.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "microbundle",
+    "build": "microbundle --no-compress",
     "dev": "microbundle watch",
     "test": "jest"
   },
@@ -40,7 +40,7 @@
     "type": "git",
     "url": "git+https://github.com/irojs/iro-core.git"
   },
-  "author": "James Daniel <mail@jamesdaniel.dev>",
+  "author": "James Daniel <irojs@jamesdaniel.dev>",
   "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/irojs/iro-core/issues"

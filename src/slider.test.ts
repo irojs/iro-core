@@ -113,24 +113,7 @@ describe('getSliderValueFromInput', () => {
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    }, 100, 10, {
-      left: 0,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(50);
-    expect(getSliderValueFromInput({
-      layoutDirection: 'vertical',
-      width: 200,
-      sliderSize: 30,
-      borderWidth: 0,
-      handleRadius: 8
-    }, 120, 10, {
-      left: 20,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(50);
+    }, 100, 10)).toEqual(50);
   });
 
   test('getSliderValueFromInput handles input coords on the edge of the slider', () => {
@@ -140,36 +123,7 @@ describe('getSliderValueFromInput', () => {
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    }, 0, 10, {
-      left: 0,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(0);
-    expect(getSliderValueFromInput({
-      layoutDirection: 'vertical',
-      width: 200,
-      sliderSize: 30,
-      borderWidth: 0,
-      handleRadius: 8
-    }, 20, 10, {
-      left: 20,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(0);
-    expect(getSliderValueFromInput({
-      layoutDirection: 'vertical',
-      width: 200,
-      sliderSize: 30,
-      borderWidth: 0,
-      handleRadius: 8
-    }, 220, 10, {
-      left: 20,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(100);
+    }, 0, 10)).toEqual(0);
   });
 
   test('getSliderValueFromInput handles input coords outside the slider', () => {
@@ -179,36 +133,21 @@ describe('getSliderValueFromInput', () => {
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    }, -10, 10, {
-      left: 0,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(0);
+    }, -10, 10)).toEqual(0);
     expect(getSliderValueFromInput({
       layoutDirection: 'vertical',
       width: 200,
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    }, -1000, 10, {
-      left: 20,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(0);
+    }, -1000, 10)).toEqual(0);
     expect(getSliderValueFromInput({
       layoutDirection: 'vertical',
       width: 200,
       sliderSize: 30,
       borderWidth: 0,
       handleRadius: 8
-    }, 600, 10, {
-      left: 20,
-      right: 200,
-      width: 200,
-      height: 36
-    })).toEqual(100);
+    }, 600, 10)).toEqual(100);
   });
 
 });

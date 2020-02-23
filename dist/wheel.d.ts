@@ -33,9 +33,8 @@ export declare function getWheelHandlePosition(props: Partial<WheelProps>, color
  * @param props - wheel props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - wheel element bounding box
  */
-export declare function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number, bounds: any): {
+export declare function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number): {
     h: number;
     s: number;
 };

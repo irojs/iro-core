@@ -58,9 +58,8 @@ export declare function getCurrentSliderValue(props: Partial<SliderOptions>, col
  * @param props - slider props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - slider element bounding box
  */
-export declare function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number, bounds: any): number;
+export declare function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number): number;
 /**
  * @desc Get the current handle position for a given color
  * @param props - slider props

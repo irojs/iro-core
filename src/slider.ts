@@ -92,15 +92,14 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>, color: IroC
  * @param props - slider props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - slider element bounding box
  */
-export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number, bounds: any) {
+export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number) {
   const { handleRange, handleStart } = getSliderDimensions(props);
   let handlePos;
   if (props.layoutDirection === 'horizontal') {
-    handlePos = -1 * (y - bounds.top) + handleRange + handleStart;
+    handlePos = -1 * y + handleRange + handleStart;
   } else {
-    handlePos = x - (bounds.left + handleStart);
+    handlePos = x - handleStart;
   }
   // clamp handle position
   handlePos = Math.max(Math.min(handlePos, handleRange), 0);

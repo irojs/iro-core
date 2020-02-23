@@ -24,9 +24,8 @@ export declare function getBoxDimensions(props: Partial<BoxOptions>): {
  * @param props - box props
  * @param x - global input x position
  * @param y - global input y position
- * @param bounds - box element bounding box
  */
-export declare function getBoxValueFromInput(props: Partial<BoxOptions>, x: number, y: number, bounds: any): {
+export declare function getBoxValueFromInput(props: Partial<BoxOptions>, x: number, y: number): {
     s: number;
     v: number;
 };
