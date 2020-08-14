@@ -1,16 +1,22 @@
-interface HsvColor {
+export interface ColorChanges {
+    h: boolean;
+    s: boolean;
+    v: boolean;
+    a: boolean;
+}
+export interface HsvColor {
     h?: number;
     s?: number;
     v?: number;
     a?: number;
 }
-interface RgbColor {
+export interface RgbColor {
     r: number;
     g: number;
     b: number;
     a?: number;
 }
-interface HslColor {
+export interface HslColor {
     h: number;
     s: number;
     l: number;
@@ -99,4 +105,3 @@ export declare class IroColor {
     hslString: string;
     hslaString: string;
 }
-export {};

@@ -38,6 +38,16 @@ const KELVIN_MAX = 40000;
 const { log, round, floor } = Math;
 
 /**
+ * @desc Clamp a number between a min and max value
+ * @param num - input value
+ * @param min - min allowed value
+ * @param max - max allowed value
+ */
+function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max)
+}
+
+/**
  * @desc Parse a css unit string - either regular int or a percentage number
  * @param str - css unit string
  * @param max - max unit value, used for calculating percentages
@@ -64,7 +74,7 @@ function intToHex(int: number): string {
   return int.toString(16).padStart(2, '0');
 }
 
-interface ColorChanges {
+export interface ColorChanges {
   h: boolean;
   s: boolean;
   v: boolean;
@@ -72,21 +82,21 @@ interface ColorChanges {
 }
 
 // all hsv color channels are optional by design
-interface HsvColor {
+export interface HsvColor {
   h?: number;
   s?: number;
   v?: number;
   a?: number;
 }
 
-interface RgbColor {
+export interface RgbColor {
   r: number;
   g: number;
   b: number;
   a?: number;
 }
 
-interface HslColor {
+export interface HslColor {
   h: number;
   s: number;
   l: number;
@@ -200,9 +210,9 @@ export class IroColor {
     const g = [t, v, v, q, p, p][mod];
     const b = [p, p, t, v, v, q][mod];
     return {
-      r: r * 255, 
-      g: g * 255, 
-      b: b * 255
+      r: clamp(r * 255, 0, 255), 
+      g: clamp(g * 255, 0, 255), 
+      b: clamp(b * 255, 0, 255)
     };
   }
 
@@ -235,9 +245,9 @@ export class IroColor {
         break;
     }
     return {
-      h: hue * 60,
-      s: saturation * 100,
-      v: value * 100
+      h: (hue * 60) % 360,
+      s: clamp(saturation * 100, 0, 100),
+      v: clamp(value * 100, 0, 100)
     }
   }
 
@@ -254,8 +264,8 @@ export class IroColor {
     const saturation = divisor < 1e-9 ? 0 : (s * v) / divisor;
     return {
       h: hsv.h,
-      s: saturation * 100,
-      l: l * 50
+      s: clamp(saturation * 100, 0, 100),
+      l: clamp(l * 50, 0, 100)
     };
   }
 
@@ -270,8 +280,8 @@ export class IroColor {
     const saturation = (l + s < 1e-9) ? 0 : (2 * s) / (l + s);
     return {
       h: hsl.h,
-      s: saturation * 100,
-      v: (l + s) / 2
+      s: clamp(saturation * 100, 0, 100),
+      v: clamp((l + s) / 2, 0, 100)
     };
   }
 
@@ -291,7 +301,11 @@ export class IroColor {
       g = 325.4494125711974 + 0.07943456536662342 * (g = temp-50) - 28.0852963507957 * log(g)
       b = 255
     }
-    return {r: floor(r), g: floor(g), b: floor(b)};
+    return {
+      r: clamp(floor(r), 0, 255),
+      g: clamp(floor(g), 0, 255),
+      b: clamp(floor(b), 0, 255)
+    };
   }
 
    /**

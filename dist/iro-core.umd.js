@@ -38,10 +38,21 @@
   var round = Math.round;
   var floor = Math.floor;
   /**
+   * @desc Clamp a number between a min and max value
+   * @param num - input value
+   * @param min - min allowed value
+   * @param max - max allowed value
+   */
+
+  function clamp(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+  }
+  /**
    * @desc Parse a css unit string - either regular int or a percentage number
    * @param str - css unit string
    * @param max - max unit value, used for calculating percentages
    */
+
 
   function parseUnit(str, max) {
     var isPercentage = str.indexOf('%') > -1;
@@ -169,9 +180,9 @@
     var g = [t, v, v, q, p, p][mod];
     var b = [p, p, t, v, v, q][mod];
     return {
-      r: r * 255,
-      g: g * 255,
-      b: b * 255
+      r: clamp(r * 255, 0, 255),
+      g: clamp(g * 255, 0, 255),
+      b: clamp(b * 255, 0, 255)
     };
   };
   /**
@@ -211,9 +222,9 @@
     }
 
     return {
-      h: hue * 60,
-      s: saturation * 100,
-      v: value * 100
+      h: hue * 60 % 360,
+      s: clamp(saturation * 100, 0, 100),
+      v: clamp(value * 100, 0, 100)
     };
   };
   /**
@@ -231,8 +242,8 @@
     var saturation = divisor < 1e-9 ? 0 : s * v / divisor;
     return {
       h: hsv.h,
-      s: saturation * 100,
-      l: l * 50
+      s: clamp(saturation * 100, 0, 100),
+      l: clamp(l * 50, 0, 100)
     };
   };
   /**
@@ -248,8 +259,8 @@
     var saturation = l + s < 1e-9 ? 0 : 2 * s / (l + s);
     return {
       h: hsl.h,
-      s: saturation * 100,
-      v: (l + s) / 2
+      s: clamp(saturation * 100, 0, 100),
+      v: clamp((l + s) / 2, 0, 100)
     };
   };
   /**
@@ -273,9 +284,9 @@
     }
 
     return {
-      r: floor(r),
-      g: floor(g),
-      b: floor(b)
+      r: clamp(floor(r), 0, 255),
+      g: clamp(floor(g), 0, 255),
+      b: clamp(floor(b), 0, 255)
     };
   };
   /**
