@@ -411,6 +411,33 @@ export class IroColor {
     this.rgb = IroColor.kelvinToRgb(value);
   }
 
+  public get red(): number {
+    const rgb = this.rgb;
+    return rgb.r;
+  }
+
+  public set red(value: number) {
+    this.rgb = { ...this.rgb, r: value };
+  }
+
+  public get green(): number {
+    const rgb = this.rgb;
+    return rgb.g;
+  }
+
+  public set green(value: number) {
+    this.rgb = { ...this.rgb, g: value };
+  }
+
+  public get blue(): number {
+    const rgb = this.rgb;
+    return rgb.b;
+  }
+
+  public set blue(value: number) {
+    this.rgb = { ...this.rgb, b: value };
+  }
+
   public get rgb(): RgbColor {
     const {r, g, b} = IroColor.hsvToRgb(this.$);
     return {

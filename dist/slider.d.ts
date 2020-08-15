@@ -1,7 +1,7 @@
 import { IroColor } from './color';
 import { IroColorPickerOptions } from './colorPickerOptions';
 export declare type SliderShape = 'bar' | 'circle' | '';
-export declare type SliderType = 'hue' | 'saturation' | 'value' | 'alpha' | 'kelvin' | '';
+export declare type SliderType = 'red' | 'green' | 'blue' | 'alpha' | 'hue' | 'saturation' | 'value' | 'kelvin' | '';
 export interface SliderOptions extends IroColorPickerOptions {
     color: IroColor;
     sliderShape: SliderShape;

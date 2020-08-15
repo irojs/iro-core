@@ -2,7 +2,7 @@ import { IroColor } from './color';
 import { IroColorPickerOptions } from './colorPickerOptions';
 
 export type SliderShape = 'bar' | 'circle' | '';
-export type SliderType = 'hue' | 'saturation' | 'value' | 'alpha' | 'kelvin' | '';
+export type SliderType = 'red' | 'green' | 'blue' |'alpha' | 'hue' | 'saturation' | 'value' | 'kelvin' | '';
 
 export interface SliderOptions extends IroColorPickerOptions {
   color: IroColor;
@@ -68,7 +68,15 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
  */
 export function getCurrentSliderValue(props: Partial<SliderOptions>, color: IroColor) {
   const hsva = color.hsva;
+  const rgb = color.rgb;
+
   switch (props.sliderType) {
+    case 'red':
+      return rgb.r / 2.55;
+    case 'green':
+      return rgb.g / 2.55;
+    case 'blue':
+      return rgb.b / 2.55;
     case 'alpha':
       return hsva.a * 100;
     case 'kelvin':
@@ -113,6 +121,10 @@ export function getSliderValueFromInput(props: Partial<SliderOptions>, x: number
       return percent / 100;
     case 'hue':
       return percent * 3.6;
+    case 'red':
+    case 'blue':
+    case 'green':
+      return percent * 2.55;
     default:
       return percent;
   }
@@ -142,14 +154,29 @@ export function getSliderHandlePosition(props: Partial<SliderOptions>, color: Ir
  */
 export function getSliderGradient(props: Partial<SliderOptions>, color: IroColor) {
   const hsv = color.hsv;
+  const rgb = color.rgb;
 
   switch (props.sliderType) {
+    case 'red':
+      return [
+        [0, `rgb(${ 0 },${ rgb.g },${ rgb.b })`],
+        [100, `rgb(${ 255 },${ rgb.g },${ rgb.b })`],
+      ];
+    case 'green':
+      return [
+        [0, `rgb(${ rgb.r },${ 0 },${ rgb.b })`],
+        [100, `rgb(${ rgb.r },${ 255 },${ rgb.b })`],
+      ];
+    case 'blue':
+      return [
+        [0, `rgb(${ rgb.r },${ rgb.g },${ 0 })`],
+        [100, `rgb(${ rgb.r },${ rgb.g },${ 255 })`],
+      ];
     case 'alpha':
-      const rgb = color.rgb;
       return [
         [0, `rgba(${ rgb.r },${ rgb.g },${ rgb.b },0)`],
         [100, `rgb(${ rgb.r },${ rgb.g },${ rgb.b })`],
-      ]
+      ];
     case 'kelvin':
       const stops = [];
       const min = props.minTemperature;

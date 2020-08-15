@@ -94,6 +94,9 @@ export declare class IroColor {
     value: number;
     alpha: number;
     kelvin: number;
+    red: number;
+    green: number;
+    blue: number;
     rgb: RgbColor;
     rgba: RgbColor;
     hsl: HslColor;
