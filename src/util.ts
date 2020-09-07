@@ -19,7 +19,7 @@ let BASE_ELEMENTS:  HTMLCollectionOf<HTMLBaseElement> | undefined;
  */
 export function resolveSvgUrl(url: string) {
   if (!BASE_ELEMENTS)
-    BASE_ELEMENTS = document.getElementsByTagName('base')
+    BASE_ELEMENTS = document.getElementsByTagName('base');
   // Sniff useragent string to check if the user is running Safari
   const ua = window.navigator.userAgent;
   const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
