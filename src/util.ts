@@ -3,7 +3,7 @@ import { IroColorPickerOptions } from './colorPickerOptions';
 // Keep track of html <base> elements for resolveSvgUrl
 // getElementsByTagName returns a live HTMLCollection, which stays in sync with the DOM tree
 // So it only needs to be called once
-const BASE_ELEMENTS = document.getElementsByTagName('base');
+let BASE_ELEMENTS:  HTMLCollectionOf<HTMLBaseElement> | undefined;
 
 /**
  * @desc Resolve an SVG reference URL
@@ -18,6 +18,8 @@ const BASE_ELEMENTS = document.getElementsByTagName('base');
  * @props url - SVG reference URL
  */
 export function resolveSvgUrl(url: string) {
+  if (!BASE_ELEMENTS)
+    BASE_ELEMENTS = document.getElementsByTagName('base')
   // Sniff useragent string to check if the user is running Safari
   const ua = window.navigator.userAgent;
   const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
