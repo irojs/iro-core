@@ -31,7 +31,7 @@ const REGEX_HEX_6 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX
 const REGEX_HEX_8 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + '$');
 
 // Kelvin temperature bounds
-const KELVIN_MIN = 1000;
+const KELVIN_MIN = 2000;
 const KELVIN_MAX = 40000;
 
 // Math shorthands
