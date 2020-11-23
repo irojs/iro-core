@@ -1,6 +1,6 @@
 {
   "name": "@irojs/iro-core",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Core functionality for iro.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.19",
     "jest": "^24.9.0",
-    "microbundle": "^0.11.0",
+    "microbundle": "^0.12.4",
     "ts-jest": "^24.1.0"
   },
   "scripts": {

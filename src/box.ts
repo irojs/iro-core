@@ -20,10 +20,10 @@ export function getBoxStyles(props: Partial<BoxOptions>) {
  * @param props - box props
  */
 export function getBoxDimensions(props: Partial<BoxOptions>) {
-  const { width, padding, handleRadius } = props;
+  const { width, boxHeight, padding, handleRadius } = props;
   return {
     width: width,
-    height: width,
+    height: boxHeight ?? width,
     radius: padding + handleRadius
   };
 }

@@ -37,7 +37,7 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
   let { width, sliderSize: sliderSize, borderWidth, handleRadius, padding, sliderShape } = props;
   const ishorizontal = props.layoutDirection === 'horizontal';
   // automatically calculate sliderSize if its not defined
-  sliderSize = sliderSize ? sliderSize : padding * 2 + handleRadius * 2 + borderWidth * 2;
+  sliderSize = sliderSize ?? padding * 2 + handleRadius * 2 + borderWidth * 2;
   if (sliderShape === 'circle') {
     return {
       handleStart: props.padding + props.handleRadius,

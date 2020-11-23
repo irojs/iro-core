@@ -4,19 +4,20 @@ export declare type WheelDirection = 'clockwise' | 'anticlockwise' | '';
 export interface IroColorPickerOptions {
     width?: number;
     height?: number;
+    color?: IroColorValue;
+    colors?: IroColorValue[];
+    padding?: number;
+    layoutDirection?: LayoutDirection;
+    borderColor?: string;
+    borderWidth?: number;
     handleRadius?: number;
     handleSvg?: string;
     handleProps?: any;
-    color?: IroColorValue;
-    colors?: IroColorValue[];
-    borderColor?: string;
-    borderWidth?: number;
     wheelLightness?: boolean;
     wheelAngle?: number;
     wheelDirection?: WheelDirection;
-    layoutDirection?: LayoutDirection;
     sliderSize?: number;
     sliderMargin?: number;
-    padding?: number;
+    boxHeight?: number;
 }
 export declare const iroColorPickerOptionDefaults: IroColorPickerOptions;

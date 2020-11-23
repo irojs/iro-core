@@ -7,37 +7,39 @@ export type WheelDirection = 'clockwise' | 'anticlockwise' | '';
 export interface IroColorPickerOptions {
   width?: number;
   height?: number;
+  color?: IroColorValue;
+  colors?: IroColorValue[];
+  padding?: number;
+  layoutDirection?: LayoutDirection;
+  borderColor?: string;
+  borderWidth?: number;
   handleRadius?: number;
   handleSvg?: string;
   handleProps?: any;
-  color?: IroColorValue;
-  colors?: IroColorValue[];
-  borderColor?: string;
-  borderWidth?: number;
   wheelLightness?: boolean;
   wheelAngle?: number;
   wheelDirection?: WheelDirection;
-  layoutDirection?: LayoutDirection;
   sliderSize?: number;
   sliderMargin?: number;
-  padding?: number;
+  boxHeight?: number;
 }
 
 export const iroColorPickerOptionDefaults: IroColorPickerOptions = {
   width: 300,
   height: 300,
+  color: '#fff',
+  colors: [],
+  padding: 6,
+  layoutDirection: 'vertical',
+  borderColor: '#fff',
+  borderWidth: 0,
   handleRadius: 8,
   handleSvg: null,
   handleProps: {x: 0, y: 0},
-  color: '#fff',
-  colors: [],
-  borderColor: '#fff',
-  borderWidth: 0,
   wheelLightness: true,
   wheelAngle: 0,
   wheelDirection: 'anticlockwise',
-  layoutDirection: 'vertical',
   sliderSize: null,
   sliderMargin: 12,
-  padding: 6,
+  boxHeight: null
 }

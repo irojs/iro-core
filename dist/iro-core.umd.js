@@ -1,8 +1,42 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.iroCore = {})));
+  (global = global || self, factory(global.iroCore = {}));
 }(this, (function (exports) {
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _extends() {
+    _extends = Object.assign || function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+
+      return target;
+    };
+
+    return _extends.apply(this, arguments);
+  }
+
   // Some regular expressions for rgb() and hsl() Colors are borrowed from tinyColor
   // https://github.com/bgrins/TinyColor
   // Kelvin temperature math borrowed from Neil Barlett's implementation
@@ -34,9 +68,9 @@
   var KELVIN_MIN = 2000;
   var KELVIN_MAX = 40000; // Math shorthands
 
-  var log = Math.log;
-  var round = Math.round;
-  var floor = Math.floor;
+  var log = Math.log,
+      round = Math.round,
+      floor = Math.floor;
   /**
    * @desc Clamp a number between a min and max value
    * @param num - input value
@@ -74,565 +108,584 @@
    */
 
 
-  function intToHex(int) {
-    return int.toString(16).padStart(2, '0');
+  function intToHex(_int) {
+    return _int.toString(16).padStart(2, '0');
   }
 
-  var IroColor = function IroColor(value, onChange) {
-    // The default Color value
-    this.$ = {
-      h: 0,
-      s: 0,
-      v: 0,
-      a: 1
-    };
-    if (value) { this.set(value); } // The watch callback function for this Color will be stored here
+  var IroColor =
+  /*#__PURE__*/
+  function () {
+    /**
+      * @constructor Color object
+      * @param value - initial color value
+    */
+    function IroColor(value, onChange) {
+      // The default Color value
+      this.$ = {
+        h: 0,
+        s: 0,
+        v: 0,
+        a: 1
+      };
+      if (value) this.set(value); // The watch callback function for this Color will be stored here
 
-    this.onChange = onChange;
-    this.initialValue = Object.assign({}, this.$); // copy initial value
-  };
-
-  var prototypeAccessors = { hsv: { configurable: true },hsva: { configurable: true },hue: { configurable: true },saturation: { configurable: true },value: { configurable: true },alpha: { configurable: true },kelvin: { configurable: true },red: { configurable: true },green: { configurable: true },blue: { configurable: true },rgb: { configurable: true },rgba: { configurable: true },hsl: { configurable: true },hsla: { configurable: true },rgbString: { configurable: true },rgbaString: { configurable: true },hexString: { configurable: true },hex8String: { configurable: true },hslString: { configurable: true },hslaString: { configurable: true } };
-  /**
-    * @desc Set the Color from any valid value
-    * @param value - new color value
-  */
+      this.onChange = onChange;
+      this.initialValue = _extends({}, this.$); // copy initial value
+    }
+    /**
+      * @desc Set the Color from any valid value
+      * @param value - new color value
+    */
 
 
-  IroColor.prototype.set = function set (value) {
-    if (typeof value === 'string') {
-      if (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value)) {
-        this.hexString = value;
-      } else if (/^rgba?/.test(value)) {
-        this.rgbString = value;
-      } else if (/^hsla?/.test(value)) {
-        this.hslString = value;
+    var _proto = IroColor.prototype;
+
+    _proto.set = function set(value) {
+      if (typeof value === 'string') {
+        if (/^(?:#?|0x?)[0-9a-fA-F]{3,8}$/.test(value)) {
+          this.hexString = value;
+        } else if (/^rgba?/.test(value)) {
+          this.rgbString = value;
+        } else if (/^hsla?/.test(value)) {
+          this.hslString = value;
+        }
+      } else if (typeof value === 'object') {
+        if (value instanceof IroColor) {
+          this.hsv = value.hsv;
+        } else if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
+          this.rgb = value;
+        } else if (typeof value === 'object' && 'h' in value && 's' in value && 'v' in value) {
+          this.hsv = value;
+        } else if (typeof value === 'object' && 'h' in value && 's' in value && 'l' in value) {
+          this.hsl = value;
+        }
+      } else {
+        throw new Error('Invalid color value');
       }
-    } else if (typeof value === 'object') {
-      if (value instanceof IroColor) {
-        this.hsv = value.hsv;
-      } else if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
-        this.rgb = value;
-      } else if (typeof value === 'object' && 'h' in value && 's' in value && 'v' in value) {
+    }
+    /**
+      * @desc Shortcut to set a specific channel value
+      * @param format - hsv | hsl | rgb
+      * @param channel - individual channel to set, for example if model = hsl, chanel = h | s | l
+      * @param value - new value for the channel
+    */
+    ;
+
+    _proto.setChannel = function setChannel(format, channel, value) {
+      var _extends2;
+
+      this[format] = _extends({}, this[format], (_extends2 = {}, _extends2[channel] = value, _extends2));
+    }
+    /**
+     * @desc Reset color back to its initial value
+     */
+    ;
+
+    _proto.reset = function reset() {
+      this.hsva = this.initialValue;
+    }
+    /**
+      * @desc make new Color instance with the same value as this one
+    */
+    ;
+
+    _proto.clone = function clone() {
+      return new IroColor(this);
+    }
+    /**
+     * @desc remove color onChange
+     */
+    ;
+
+    _proto.unbind = function unbind() {
+      this.onChange = undefined;
+    }
+    /**
+      * @desc Convert hsv object to rgb
+      * @param hsv - hsv color object
+    */
+    ;
+
+    IroColor.hsvToRgb = function hsvToRgb(hsv) {
+      var h = hsv.h / 60;
+      var s = hsv.s / 100;
+      var v = hsv.v / 100;
+      var i = floor(h);
+      var f = h - i;
+      var p = v * (1 - s);
+      var q = v * (1 - f * s);
+      var t = v * (1 - (1 - f) * s);
+      var mod = i % 6;
+      var r = [v, q, p, p, t, v][mod];
+      var g = [t, v, v, q, p, p][mod];
+      var b = [p, p, t, v, v, q][mod];
+      return {
+        r: clamp(r * 255, 0, 255),
+        g: clamp(g * 255, 0, 255),
+        b: clamp(b * 255, 0, 255)
+      };
+    }
+    /**
+      * @desc Convert rgb object to hsv
+      * @param rgb - rgb object
+    */
+    ;
+
+    IroColor.rgbToHsv = function rgbToHsv(rgb) {
+      var r = rgb.r / 255;
+      var g = rgb.g / 255;
+      var b = rgb.b / 255;
+      var max = Math.max(r, g, b);
+      var min = Math.min(r, g, b);
+      var delta = max - min;
+      var hue = 0;
+      var value = max;
+      var saturation = max === 0 ? 0 : delta / max;
+
+      switch (max) {
+        case min:
+          hue = 0; // achromatic
+
+          break;
+
+        case r:
+          hue = (g - b) / delta + (g < b ? 6 : 0);
+          break;
+
+        case g:
+          hue = (b - r) / delta + 2;
+          break;
+
+        case b:
+          hue = (r - g) / delta + 4;
+          break;
+      }
+
+      return {
+        h: hue * 60 % 360,
+        s: clamp(saturation * 100, 0, 100),
+        v: clamp(value * 100, 0, 100)
+      };
+    }
+    /**
+      * @desc Convert hsv object to hsl
+      * @param hsv - hsv object
+    */
+    ;
+
+    IroColor.hsvToHsl = function hsvToHsl(hsv) {
+      var s = hsv.s / 100;
+      var v = hsv.v / 100;
+      var l = (2 - s) * v;
+      var divisor = l <= 1 ? l : 2 - l; // Avoid division by zero when lightness is close to zero
+
+      var saturation = divisor < 1e-9 ? 0 : s * v / divisor;
+      return {
+        h: hsv.h,
+        s: clamp(saturation * 100, 0, 100),
+        l: clamp(l * 50, 0, 100)
+      };
+    }
+    /**
+      * @desc Convert hsl object to hsv
+      * @param hsl - hsl object
+    */
+    ;
+
+    IroColor.hslToHsv = function hslToHsv(hsl) {
+      var l = hsl.l * 2;
+      var s = hsl.s * (l <= 100 ? l : 200 - l) / 100; // Avoid division by zero when l + s is near 0
+
+      var saturation = l + s < 1e-9 ? 0 : 2 * s / (l + s);
+      return {
+        h: hsl.h,
+        s: clamp(saturation * 100, 0, 100),
+        v: clamp((l + s) / 2, 0, 100)
+      };
+    }
+    /**
+      * @desc Convert a kelvin temperature to an approx, RGB value
+      * @param kelvin - kelvin temperature
+    */
+    ;
+
+    IroColor.kelvinToRgb = function kelvinToRgb(kelvin) {
+      var temp = kelvin / 100;
+      var r, g, b;
+
+      if (temp < 66) {
+        r = 255;
+        g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log(g);
+        b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log(b);
+      } else {
+        r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log(r);
+        g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log(g);
+        b = 255;
+      }
+
+      return {
+        r: clamp(floor(r), 0, 255),
+        g: clamp(floor(g), 0, 255),
+        b: clamp(floor(b), 0, 255)
+      };
+    }
+    /**
+     * @desc Convert an RGB color to an approximate kelvin temperature
+     * @param kelvin - kelvin temperature
+    */
+    ;
+
+    IroColor.rgbToKelvin = function rgbToKelvin(rgb) {
+      var r = rgb.r,
+          b = rgb.b;
+      var eps = 0.4;
+      var minTemp = KELVIN_MIN;
+      var maxTemp = KELVIN_MAX;
+      var temp;
+
+      while (maxTemp - minTemp > eps) {
+        temp = (maxTemp + minTemp) * 0.5;
+
+        var _rgb = IroColor.kelvinToRgb(temp);
+
+        if (_rgb.b / _rgb.r >= b / r) {
+          maxTemp = temp;
+        } else {
+          minTemp = temp;
+        }
+      }
+
+      return temp;
+    };
+
+    _createClass(IroColor, [{
+      key: "hsv",
+      get: function get() {
+        // value is cloned to allow changes to be made to the values before passing them back
+        var value = this.$;
+        return {
+          h: value.h,
+          s: value.s,
+          v: value.v
+        };
+      },
+      set: function set(newValue) {
+        var oldValue = this.$;
+        newValue = _extends({}, oldValue, newValue); // If this Color is being watched for changes we need to compare the new and old values to check the difference
+        // Otherwise we can just be lazy
+
+        if (this.onChange) {
+          // Compute changed values
+          var changes = {
+            h: false,
+            v: false,
+            s: false,
+            a: false
+          };
+
+          for (var key in oldValue) {
+            changes[key] = newValue[key] != oldValue[key];
+          }
+
+          this.$ = newValue; // If the value has changed, call hook callback
+
+          if (changes.h || changes.s || changes.v || changes.a) this.onChange(this, changes);
+        } else {
+          this.$ = newValue;
+        }
+      }
+    }, {
+      key: "hsva",
+      get: function get() {
+        return _extends({}, this.$);
+      },
+      set: function set(value) {
         this.hsv = value;
-      } else if (typeof value === 'object' && 'h' in value && 's' in value && 'l' in value) {
+      }
+    }, {
+      key: "hue",
+      get: function get() {
+        return this.$.h;
+      },
+      set: function set(value) {
+        this.hsv = {
+          h: value
+        };
+      }
+    }, {
+      key: "saturation",
+      get: function get() {
+        return this.$.s;
+      },
+      set: function set(value) {
+        this.hsv = {
+          s: value
+        };
+      }
+    }, {
+      key: "value",
+      get: function get() {
+        return this.$.v;
+      },
+      set: function set(value) {
+        this.hsv = {
+          v: value
+        };
+      }
+    }, {
+      key: "alpha",
+      get: function get() {
+        return this.$.a;
+      },
+      set: function set(value) {
+        this.hsv = _extends({}, this.hsv, {
+          a: value
+        });
+      }
+    }, {
+      key: "kelvin",
+      get: function get() {
+        return IroColor.rgbToKelvin(this.rgb);
+      },
+      set: function set(value) {
+        this.rgb = IroColor.kelvinToRgb(value);
+      }
+    }, {
+      key: "red",
+      get: function get() {
+        var rgb = this.rgb;
+        return rgb.r;
+      },
+      set: function set(value) {
+        this.rgb = _extends({}, this.rgb, {
+          r: value
+        });
+      }
+    }, {
+      key: "green",
+      get: function get() {
+        var rgb = this.rgb;
+        return rgb.g;
+      },
+      set: function set(value) {
+        this.rgb = _extends({}, this.rgb, {
+          g: value
+        });
+      }
+    }, {
+      key: "blue",
+      get: function get() {
+        var rgb = this.rgb;
+        return rgb.b;
+      },
+      set: function set(value) {
+        this.rgb = _extends({}, this.rgb, {
+          b: value
+        });
+      }
+    }, {
+      key: "rgb",
+      get: function get() {
+        var _IroColor$hsvToRgb = IroColor.hsvToRgb(this.$),
+            r = _IroColor$hsvToRgb.r,
+            g = _IroColor$hsvToRgb.g,
+            b = _IroColor$hsvToRgb.b;
+
+        return {
+          r: round(r),
+          g: round(g),
+          b: round(b)
+        };
+      },
+      set: function set(value) {
+        this.hsv = _extends({}, IroColor.rgbToHsv(value), {
+          a: value.a === undefined ? 1 : value.a
+        });
+      }
+    }, {
+      key: "rgba",
+      get: function get() {
+        return _extends({}, this.rgb, {
+          a: this.alpha
+        });
+      },
+      set: function set(value) {
+        this.rgb = value;
+      }
+    }, {
+      key: "hsl",
+      get: function get() {
+        var _IroColor$hsvToHsl = IroColor.hsvToHsl(this.$),
+            h = _IroColor$hsvToHsl.h,
+            s = _IroColor$hsvToHsl.s,
+            l = _IroColor$hsvToHsl.l;
+
+        return {
+          h: round(h),
+          s: round(s),
+          l: round(l)
+        };
+      },
+      set: function set(value) {
+        this.hsv = _extends({}, IroColor.hslToHsv(value), {
+          a: value.a === undefined ? 1 : value.a
+        });
+      }
+    }, {
+      key: "hsla",
+      get: function get() {
+        return _extends({}, this.hsl, {
+          a: this.alpha
+        });
+      },
+      set: function set(value) {
         this.hsl = value;
       }
-    } else {
-      throw new Error('Invalid color value');
-    }
-  };
-  /**
-    * @desc Shortcut to set a specific channel value
-    * @param format - hsv | hsl | rgb
-    * @param channel - individual channel to set, for example if model = hsl, chanel = h | s | l
-    * @param value - new value for the channel
-  */
+    }, {
+      key: "rgbString",
+      get: function get() {
+        var rgb = this.rgb;
+        return "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
+      },
+      set: function set(value) {
+        var match;
+        var r,
+            g,
+            b,
+            a = 1;
 
+        if (match = REGEX_FUNCTIONAL_RGB.exec(value)) {
+          r = parseUnit(match[1], 255);
+          g = parseUnit(match[2], 255);
+          b = parseUnit(match[3], 255);
+        } else if (match = REGEX_FUNCTIONAL_RGBA.exec(value)) {
+          r = parseUnit(match[1], 255);
+          g = parseUnit(match[2], 255);
+          b = parseUnit(match[3], 255);
+          a = parseUnit(match[4], 1);
+        }
 
-  IroColor.prototype.setChannel = function setChannel (format, channel, value) {
-      var obj;
-
-    this[format] = Object.assign({}, this[format],
-      ( obj = {}, obj[channel] = value, obj ));
-  };
-  /**
-   * @desc Reset color back to its initial value
-   */
-
-
-  IroColor.prototype.reset = function reset () {
-    this.hsva = this.initialValue;
-  };
-  /**
-    * @desc make new Color instance with the same value as this one
-  */
-
-
-  IroColor.prototype.clone = function clone () {
-    return new IroColor(this);
-  };
-  /**
-   * @desc remove color onChange
-   */
-
-
-  IroColor.prototype.unbind = function unbind () {
-    this.onChange = undefined;
-  };
-  /**
-    * @desc Convert hsv object to rgb
-    * @param hsv - hsv color object
-  */
-
-
-  IroColor.hsvToRgb = function hsvToRgb (hsv) {
-    var h = hsv.h / 60;
-    var s = hsv.s / 100;
-    var v = hsv.v / 100;
-    var i = floor(h);
-    var f = h - i;
-    var p = v * (1 - s);
-    var q = v * (1 - f * s);
-    var t = v * (1 - (1 - f) * s);
-    var mod = i % 6;
-    var r = [v, q, p, p, t, v][mod];
-    var g = [t, v, v, q, p, p][mod];
-    var b = [p, p, t, v, v, q][mod];
-    return {
-      r: clamp(r * 255, 0, 255),
-      g: clamp(g * 255, 0, 255),
-      b: clamp(b * 255, 0, 255)
-    };
-  };
-  /**
-    * @desc Convert rgb object to hsv
-    * @param rgb - rgb object
-  */
-
-
-  IroColor.rgbToHsv = function rgbToHsv (rgb) {
-    var r = rgb.r / 255;
-    var g = rgb.g / 255;
-    var b = rgb.b / 255;
-    var max = Math.max(r, g, b);
-    var min = Math.min(r, g, b);
-    var delta = max - min;
-    var hue = 0;
-    var value = max;
-    var saturation = max === 0 ? 0 : delta / max;
-
-    switch (max) {
-      case min:
-        hue = 0; // achromatic
-
-        break;
-
-      case r:
-        hue = (g - b) / delta + (g < b ? 6 : 0);
-        break;
-
-      case g:
-        hue = (b - r) / delta + 2;
-        break;
-
-      case b:
-        hue = (r - g) / delta + 4;
-        break;
-    }
-
-    return {
-      h: hue * 60 % 360,
-      s: clamp(saturation * 100, 0, 100),
-      v: clamp(value * 100, 0, 100)
-    };
-  };
-  /**
-    * @desc Convert hsv object to hsl
-    * @param hsv - hsv object
-  */
-
-
-  IroColor.hsvToHsl = function hsvToHsl (hsv) {
-    var s = hsv.s / 100;
-    var v = hsv.v / 100;
-    var l = (2 - s) * v;
-    var divisor = l <= 1 ? l : 2 - l; // Avoid division by zero when lightness is close to zero
-
-    var saturation = divisor < 1e-9 ? 0 : s * v / divisor;
-    return {
-      h: hsv.h,
-      s: clamp(saturation * 100, 0, 100),
-      l: clamp(l * 50, 0, 100)
-    };
-  };
-  /**
-    * @desc Convert hsl object to hsv
-    * @param hsl - hsl object
-  */
-
-
-  IroColor.hslToHsv = function hslToHsv (hsl) {
-    var l = hsl.l * 2;
-    var s = hsl.s * (l <= 100 ? l : 200 - l) / 100; // Avoid division by zero when l + s is near 0
-
-    var saturation = l + s < 1e-9 ? 0 : 2 * s / (l + s);
-    return {
-      h: hsl.h,
-      s: clamp(saturation * 100, 0, 100),
-      v: clamp((l + s) / 2, 0, 100)
-    };
-  };
-  /**
-    * @desc Convert a kelvin temperature to an approx, RGB value
-    * @param kelvin - kelvin temperature
-  */
-
-
-  IroColor.kelvinToRgb = function kelvinToRgb (kelvin) {
-    var temp = kelvin / 100;
-    var r, g, b;
-
-    if (temp < 66) {
-      r = 255;
-      g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log(g);
-      b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log(b);
-    } else {
-      r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log(r);
-      g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log(g);
-      b = 255;
-    }
-
-    return {
-      r: clamp(floor(r), 0, 255),
-      g: clamp(floor(g), 0, 255),
-      b: clamp(floor(b), 0, 255)
-    };
-  };
-  /**
-   * @desc Convert an RGB color to an approximate kelvin temperature
-   * @param kelvin - kelvin temperature
-  */
-
-
-  IroColor.rgbToKelvin = function rgbToKelvin (rgb) {
-    var r = rgb.r;
-      var b = rgb.b;
-    var eps = 0.4;
-    var minTemp = KELVIN_MIN;
-    var maxTemp = KELVIN_MAX;
-    var temp;
-
-    while (maxTemp - minTemp > eps) {
-      temp = (maxTemp + minTemp) * 0.5;
-      var rgb$1 = IroColor.kelvinToRgb(temp);
-
-      if (rgb$1.b / rgb$1.r >= b / r) {
-        maxTemp = temp;
-      } else {
-        minTemp = temp;
+        if (match) {
+          this.rgb = {
+            r: r,
+            g: g,
+            b: b,
+            a: a
+          };
+        } else {
+          throw new Error('Invalid rgb string');
+        }
       }
-    }
-
-    return temp;
-  };
-
-  prototypeAccessors.hsv.get = function () {
-    // value is cloned to allow changes to be made to the values before passing them back
-    var value = this.$;
-    return {
-      h: value.h,
-      s: value.s,
-      v: value.v
-    };
-  };
-
-  prototypeAccessors.hsv.set = function (newValue) {
-    var oldValue = this.$;
-    newValue = Object.assign({}, oldValue,
-      newValue); // If this Color is being watched for changes we need to compare the new and old values to check the difference
-    // Otherwise we can just be lazy
-
-    if (this.onChange) {
-      // Compute changed values
-      var changes = {
-        h: false,
-        v: false,
-        s: false,
-        a: false
-      };
-
-      for (var key in oldValue) {
-        changes[key] = newValue[key] != oldValue[key];
+    }, {
+      key: "rgbaString",
+      get: function get() {
+        var rgba = this.rgba;
+        return "rgba(" + rgba.r + ", " + rgba.g + ", " + rgba.b + ", " + rgba.a + ")";
+      },
+      set: function set(value) {
+        this.rgbString = value;
       }
+    }, {
+      key: "hexString",
+      get: function get() {
+        var rgb = this.rgb;
+        return "#" + intToHex(rgb.r) + intToHex(rgb.g) + intToHex(rgb.b);
+      },
+      set: function set(value) {
+        var match;
+        var r,
+            g,
+            b,
+            a = 255;
 
-      this.$ = newValue; // If the value has changed, call hook callback
+        if (match = REGEX_HEX_3.exec(value)) {
+          r = parseHexInt(match[1]) * 17;
+          g = parseHexInt(match[2]) * 17;
+          b = parseHexInt(match[3]) * 17;
+        } else if (match = REGEX_HEX_4.exec(value)) {
+          r = parseHexInt(match[1]) * 17;
+          g = parseHexInt(match[2]) * 17;
+          b = parseHexInt(match[3]) * 17;
+          a = parseHexInt(match[4]) * 17;
+        } else if (match = REGEX_HEX_6.exec(value)) {
+          r = parseHexInt(match[1]);
+          g = parseHexInt(match[2]);
+          b = parseHexInt(match[3]);
+        } else if (match = REGEX_HEX_8.exec(value)) {
+          r = parseHexInt(match[1]);
+          g = parseHexInt(match[2]);
+          b = parseHexInt(match[3]);
+          a = parseHexInt(match[4]);
+        }
 
-      if (changes.h || changes.s || changes.v || changes.a) { this.onChange(this, changes); }
-    } else {
-      this.$ = newValue;
-    }
-  };
+        if (match) {
+          this.rgb = {
+            r: r,
+            g: g,
+            b: b,
+            a: a / 255
+          };
+        } else {
+          throw new Error('Invalid hex string');
+        }
+      }
+    }, {
+      key: "hex8String",
+      get: function get() {
+        var rgba = this.rgba;
+        return "#" + intToHex(rgba.r) + intToHex(rgba.g) + intToHex(rgba.b) + intToHex(floor(rgba.a * 255));
+      },
+      set: function set(value) {
+        this.hexString = value;
+      }
+    }, {
+      key: "hslString",
+      get: function get() {
+        var hsl = this.hsl;
+        return "hsl(" + hsl.h + ", " + hsl.s + "%, " + hsl.l + "%)";
+      },
+      set: function set(value) {
+        var match;
+        var h,
+            s,
+            l,
+            a = 1;
 
-  prototypeAccessors.hsva.get = function () {
-    return Object.assign({}, this.$);
-  };
+        if (match = REGEX_FUNCTIONAL_HSL.exec(value)) {
+          h = parseUnit(match[1], 360);
+          s = parseUnit(match[2], 100);
+          l = parseUnit(match[3], 100);
+        } else if (match = REGEX_FUNCTIONAL_HSLA.exec(value)) {
+          h = parseUnit(match[1], 360);
+          s = parseUnit(match[2], 100);
+          l = parseUnit(match[3], 100);
+          a = parseUnit(match[4], 1);
+        }
 
-  prototypeAccessors.hsva.set = function (value) {
-    this.hsv = value;
-  };
+        if (match) {
+          this.hsl = {
+            h: h,
+            s: s,
+            l: l,
+            a: a
+          };
+        } else {
+          throw new Error('Invalid hsl string');
+        }
+      }
+    }, {
+      key: "hslaString",
+      get: function get() {
+        var hsla = this.hsla;
+        return "hsl(" + hsla.h + ", " + hsla.s + "%, " + hsla.l + "%, " + hsla.a + ")";
+      },
+      set: function set(value) {
+        this.hslString = value;
+      }
+    }]);
 
-  prototypeAccessors.hue.get = function () {
-    return this.$.h;
-  };
-
-  prototypeAccessors.hue.set = function (value) {
-    this.hsv = {
-      h: value
-    };
-  };
-
-  prototypeAccessors.saturation.get = function () {
-    return this.$.s;
-  };
-
-  prototypeAccessors.saturation.set = function (value) {
-    this.hsv = {
-      s: value
-    };
-  };
-
-  prototypeAccessors.value.get = function () {
-    return this.$.v;
-  };
-
-  prototypeAccessors.value.set = function (value) {
-    this.hsv = {
-      v: value
-    };
-  };
-
-  prototypeAccessors.alpha.get = function () {
-    return this.$.a;
-  };
-
-  prototypeAccessors.alpha.set = function (value) {
-    this.hsv = Object.assign({}, this.hsv,
-      {a: value});
-  };
-
-  prototypeAccessors.kelvin.get = function () {
-    return IroColor.rgbToKelvin(this.rgb);
-  };
-
-  prototypeAccessors.kelvin.set = function (value) {
-    this.rgb = IroColor.kelvinToRgb(value);
-  };
-
-  prototypeAccessors.red.get = function () {
-    var rgb = this.rgb;
-    return rgb.r;
-  };
-
-  prototypeAccessors.red.set = function (value) {
-    this.rgb = Object.assign({}, this.rgb,
-      {r: value});
-  };
-
-  prototypeAccessors.green.get = function () {
-    var rgb = this.rgb;
-    return rgb.g;
-  };
-
-  prototypeAccessors.green.set = function (value) {
-    this.rgb = Object.assign({}, this.rgb,
-      {g: value});
-  };
-
-  prototypeAccessors.blue.get = function () {
-    var rgb = this.rgb;
-    return rgb.b;
-  };
-
-  prototypeAccessors.blue.set = function (value) {
-    this.rgb = Object.assign({}, this.rgb,
-      {b: value});
-  };
-
-  prototypeAccessors.rgb.get = function () {
-    var ref = IroColor.hsvToRgb(this.$);
-      var r = ref.r;
-      var g = ref.g;
-      var b = ref.b;
-    return {
-      r: round(r),
-      g: round(g),
-      b: round(b)
-    };
-  };
-
-  prototypeAccessors.rgb.set = function (value) {
-    this.hsv = Object.assign({}, IroColor.rgbToHsv(value),
-      {a: value.a === undefined ? 1 : value.a});
-  };
-
-  prototypeAccessors.rgba.get = function () {
-    return Object.assign({}, this.rgb,
-      {a: this.alpha});
-  };
-
-  prototypeAccessors.rgba.set = function (value) {
-    this.rgb = value;
-  };
-
-  prototypeAccessors.hsl.get = function () {
-    var ref = IroColor.hsvToHsl(this.$);
-      var h = ref.h;
-      var s = ref.s;
-      var l = ref.l;
-    return {
-      h: round(h),
-      s: round(s),
-      l: round(l)
-    };
-  };
-
-  prototypeAccessors.hsl.set = function (value) {
-    this.hsv = Object.assign({}, IroColor.hslToHsv(value),
-      {a: value.a === undefined ? 1 : value.a});
-  };
-
-  prototypeAccessors.hsla.get = function () {
-    return Object.assign({}, this.hsl,
-      {a: this.alpha});
-  };
-
-  prototypeAccessors.hsla.set = function (value) {
-    this.hsl = value;
-  };
-
-  prototypeAccessors.rgbString.get = function () {
-    var rgb = this.rgb;
-    return ("rgb(" + (rgb.r) + ", " + (rgb.g) + ", " + (rgb.b) + ")");
-  };
-
-  prototypeAccessors.rgbString.set = function (value) {
-    var match;
-    var r,
-        g,
-        b,
-        a = 1;
-
-    if (match = REGEX_FUNCTIONAL_RGB.exec(value)) {
-      r = parseUnit(match[1], 255);
-      g = parseUnit(match[2], 255);
-      b = parseUnit(match[3], 255);
-    } else if (match = REGEX_FUNCTIONAL_RGBA.exec(value)) {
-      r = parseUnit(match[1], 255);
-      g = parseUnit(match[2], 255);
-      b = parseUnit(match[3], 255);
-      a = parseUnit(match[4], 1);
-    }
-
-    if (match) {
-      this.rgb = {
-        r: r,
-        g: g,
-        b: b,
-        a: a
-      };
-    } else {
-      throw new Error('Invalid rgb string');
-    }
-  };
-
-  prototypeAccessors.rgbaString.get = function () {
-    var rgba = this.rgba;
-    return ("rgba(" + (rgba.r) + ", " + (rgba.g) + ", " + (rgba.b) + ", " + (rgba.a) + ")");
-  };
-
-  prototypeAccessors.rgbaString.set = function (value) {
-    this.rgbString = value;
-  };
-
-  prototypeAccessors.hexString.get = function () {
-    var rgb = this.rgb;
-    return ("#" + (intToHex(rgb.r)) + (intToHex(rgb.g)) + (intToHex(rgb.b)));
-  };
-
-  prototypeAccessors.hexString.set = function (value) {
-    var match;
-    var r,
-        g,
-        b,
-        a = 255;
-
-    if (match = REGEX_HEX_3.exec(value)) {
-      r = parseHexInt(match[1]) * 17;
-      g = parseHexInt(match[2]) * 17;
-      b = parseHexInt(match[3]) * 17;
-    } else if (match = REGEX_HEX_4.exec(value)) {
-      r = parseHexInt(match[1]) * 17;
-      g = parseHexInt(match[2]) * 17;
-      b = parseHexInt(match[3]) * 17;
-      a = parseHexInt(match[4]) * 17;
-    } else if (match = REGEX_HEX_6.exec(value)) {
-      r = parseHexInt(match[1]);
-      g = parseHexInt(match[2]);
-      b = parseHexInt(match[3]);
-    } else if (match = REGEX_HEX_8.exec(value)) {
-      r = parseHexInt(match[1]);
-      g = parseHexInt(match[2]);
-      b = parseHexInt(match[3]);
-      a = parseHexInt(match[4]);
-    }
-
-    if (match) {
-      this.rgb = {
-        r: r,
-        g: g,
-        b: b,
-        a: a / 255
-      };
-    } else {
-      throw new Error('Invalid hex string');
-    }
-  };
-
-  prototypeAccessors.hex8String.get = function () {
-    var rgba = this.rgba;
-    return ("#" + (intToHex(rgba.r)) + (intToHex(rgba.g)) + (intToHex(rgba.b)) + (intToHex(floor(rgba.a * 255))));
-  };
-
-  prototypeAccessors.hex8String.set = function (value) {
-    this.hexString = value;
-  };
-
-  prototypeAccessors.hslString.get = function () {
-    var hsl = this.hsl;
-    return ("hsl(" + (hsl.h) + ", " + (hsl.s) + "%, " + (hsl.l) + "%)");
-  };
-
-  prototypeAccessors.hslString.set = function (value) {
-    var match;
-    var h,
-        s,
-        l,
-        a = 1;
-
-    if (match = REGEX_FUNCTIONAL_HSL.exec(value)) {
-      h = parseUnit(match[1], 360);
-      s = parseUnit(match[2], 100);
-      l = parseUnit(match[3], 100);
-    } else if (match = REGEX_FUNCTIONAL_HSLA.exec(value)) {
-      h = parseUnit(match[1], 360);
-      s = parseUnit(match[2], 100);
-      l = parseUnit(match[3], 100);
-      a = parseUnit(match[4], 1);
-    }
-
-    if (match) {
-      this.hsl = {
-        h: h,
-        s: s,
-        l: l,
-        a: a
-      };
-    } else {
-      throw new Error('Invalid hsl string');
-    }
-  };
-
-  prototypeAccessors.hslaString.get = function () {
-    var hsla = this.hsla;
-    return ("hsl(" + (hsla.h) + ", " + (hsla.s) + "%, " + (hsla.l) + "%, " + (hsla.a) + ")");
-  };
-
-  prototypeAccessors.hslaString.set = function (value) {
-    this.hslString = value;
-  };
-
-  Object.defineProperties( IroColor.prototype, prototypeAccessors );
+    return IroColor;
+  }();
 
   var sliderDefaultOptions = {
     sliderShape: 'bar',
@@ -646,9 +699,9 @@
    */
 
   function getSliderStyles(props) {
-    var obj;
+    var _ref;
 
-    return ( obj = {}, obj[props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop'] = props.sliderMargin, obj );
+    return _ref = {}, _ref[props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop'] = props.sliderMargin, _ref;
   }
   /**
    * @desc Get the bounding dimensions of the slider
@@ -656,15 +709,17 @@
    */
 
   function getSliderDimensions(props) {
-    var width = props.width;
-    var sliderSize = props.sliderSize;
-    var borderWidth = props.borderWidth;
-    var handleRadius = props.handleRadius;
-    var padding = props.padding;
-    var sliderShape = props.sliderShape;
+    var _sliderSize;
+
+    var width = props.width,
+        sliderSize = props.sliderSize,
+        borderWidth = props.borderWidth,
+        handleRadius = props.handleRadius,
+        padding = props.padding,
+        sliderShape = props.sliderShape;
     var ishorizontal = props.layoutDirection === 'horizontal'; // automatically calculate sliderSize if its not defined
 
-    sliderSize = sliderSize ? sliderSize : padding * 2 + handleRadius * 2 + borderWidth * 2;
+    sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2 + borderWidth * 2;
 
     if (sliderShape === 'circle') {
       return {
@@ -712,8 +767,8 @@
         return hsva.a * 100;
 
       case 'kelvin':
-        var minTemperature = props.minTemperature;
-    var maxTemperature = props.maxTemperature;
+        var minTemperature = props.minTemperature,
+            maxTemperature = props.maxTemperature;
         var temperatureRange = maxTemperature - minTemperature;
         var percent = (color.kelvin - minTemperature) / temperatureRange * 100; // clmap percentage
 
@@ -738,9 +793,10 @@
    */
 
   function getSliderValueFromInput(props, x, y) {
-    var ref = getSliderDimensions(props);
-    var handleRange = ref.handleRange;
-    var handleStart = ref.handleStart;
+    var _getSliderDimensions = getSliderDimensions(props),
+        handleRange = _getSliderDimensions.handleRange,
+        handleStart = _getSliderDimensions.handleStart;
+
     var handlePos;
 
     if (props.layoutDirection === 'horizontal') {
@@ -755,8 +811,8 @@
 
     switch (props.sliderType) {
       case 'kelvin':
-        var minTemperature = props.minTemperature;
-    var maxTemperature = props.maxTemperature;
+        var minTemperature = props.minTemperature,
+            maxTemperature = props.maxTemperature;
         var temperatureRange = maxTemperature - minTemperature;
         return minTemperature + temperatureRange * (percent / 100);
 
@@ -782,11 +838,12 @@
    */
 
   function getSliderHandlePosition(props, color) {
-    var ref = getSliderDimensions(props);
-    var width = ref.width;
-    var height = ref.height;
-    var handleRange = ref.handleRange;
-    var handleStart = ref.handleStart;
+    var _getSliderDimensions2 = getSliderDimensions(props),
+        width = _getSliderDimensions2.width,
+        height = _getSliderDimensions2.height,
+        handleRange = _getSliderDimensions2.handleRange,
+        handleStart = _getSliderDimensions2.handleStart;
+
     var ishorizontal = props.layoutDirection === 'horizontal';
     var sliderValue = getCurrentSliderValue(props, color);
     var midPoint = ishorizontal ? width / 2 : height / 2;
@@ -813,16 +870,16 @@
 
     switch (props.sliderType) {
       case 'red':
-        return [[0, ("rgb(" + (0) + "," + (rgb.g) + "," + (rgb.b) + ")")], [100, ("rgb(" + (255) + "," + (rgb.g) + "," + (rgb.b) + ")")]];
+        return [[0, "rgb(" + 0 + "," + rgb.g + "," + rgb.b + ")"], [100, "rgb(" + 255 + "," + rgb.g + "," + rgb.b + ")"]];
 
       case 'green':
-        return [[0, ("rgb(" + (rgb.r) + "," + (0) + "," + (rgb.b) + ")")], [100, ("rgb(" + (rgb.r) + "," + (255) + "," + (rgb.b) + ")")]];
+        return [[0, "rgb(" + rgb.r + "," + 0 + "," + rgb.b + ")"], [100, "rgb(" + rgb.r + "," + 255 + "," + rgb.b + ")"]];
 
       case 'blue':
-        return [[0, ("rgb(" + (rgb.r) + "," + (rgb.g) + "," + (0) + ")")], [100, ("rgb(" + (rgb.r) + "," + (rgb.g) + "," + (255) + ")")]];
+        return [[0, "rgb(" + rgb.r + "," + rgb.g + "," + 0 + ")"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + 255 + ")"]];
 
       case 'alpha':
-        return [[0, ("rgba(" + (rgb.r) + "," + (rgb.g) + "," + (rgb.b) + ",0)")], [100, ("rgb(" + (rgb.r) + "," + (rgb.g) + "," + (rgb.b) + ")")]];
+        return [[0, "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0)"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")"]];
 
       case 'kelvin':
         var stops = [];
@@ -832,11 +889,12 @@
         var range = max - min;
 
         for (var kelvin = min, stop = 0; kelvin < max; kelvin += range / numStops, stop += 1) {
-          var ref = IroColor.kelvinToRgb(kelvin);
-          var r = ref.r;
-          var g = ref.g;
-          var b = ref.b;
-          stops.push([100 / numStops * stop, ("rgb(" + r + "," + g + "," + b + ")")]);
+          var _IroColor$kelvinToRgb = IroColor.kelvinToRgb(kelvin),
+              r = _IroColor$kelvinToRgb.r,
+              g = _IroColor$kelvinToRgb.g,
+              b = _IroColor$kelvinToRgb.b;
+
+          stops.push([100 / numStops * stop, "rgb(" + r + "," + g + "," + b + ")"]);
         }
 
         return stops;
@@ -855,7 +913,7 @@
           s: 100,
           v: hsv.v
         });
-        return [[0, ("hsl(" + (noSat.h) + "," + (noSat.s) + "%," + (noSat.l) + "%)")], [100, ("hsl(" + (fullSat.h) + "," + (fullSat.s) + "%," + (fullSat.l) + "%)")]];
+        return [[0, "hsl(" + noSat.h + "," + noSat.s + "%," + noSat.l + "%)"], [100, "hsl(" + fullSat.h + "," + fullSat.s + "%," + fullSat.l + "%)"]];
 
       case 'value':
       default:
@@ -864,7 +922,7 @@
           s: hsv.s,
           v: 100
         });
-        return [[0, '#000'], [100, ("hsl(" + (hsl.h) + "," + (hsl.s) + "%," + (hsl.l) + "%)")]];
+        return [[0, '#000'], [100, "hsl(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%)"]];
     }
   }
   /**
@@ -923,9 +981,11 @@
 
   function getWheelHandlePosition(props, color) {
     var hsv = color.hsv;
-    var ref = getWheelDimensions(props);
-    var cx = ref.cx;
-    var cy = ref.cy;
+
+    var _getWheelDimensions = getWheelDimensions(props),
+        cx = _getWheelDimensions.cx,
+        cy = _getWheelDimensions.cy;
+
     var handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
     var handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (Math.PI / 180);
     var handleDist = hsv.s / 100 * handleRange;
@@ -943,9 +1003,10 @@
    */
 
   function getWheelValueFromInput(props, x, y) {
-    var ref = getWheelDimensions(props);
-    var cx = ref.cx;
-    var cy = ref.cy;
+    var _getWheelDimensions2 = getWheelDimensions(props),
+        cx = _getWheelDimensions2.cx,
+        cy = _getWheelDimensions2.cy;
+
     var handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
     x = cx - x;
     y = cy - y; // Calculate the hue by converting the angle to radians
@@ -965,9 +1026,9 @@
    * @param props - box props
    */
   function getBoxStyles(props) {
-    var obj;
+    var _ref;
 
-    return ( obj = {}, obj[props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop'] = props.sliderMargin, obj );
+    return _ref = {}, _ref[props.layoutDirection === 'horizontal' ? 'marginLeft' : 'marginTop'] = props.sliderMargin, _ref;
   }
   /**
    * @desc Get the bounding dimensions of the box
@@ -975,12 +1036,13 @@
    */
 
   function getBoxDimensions(props) {
-    var width = props.width;
-    var padding = props.padding;
-    var handleRadius = props.handleRadius;
+    var width = props.width,
+        boxHeight = props.boxHeight,
+        padding = props.padding,
+        handleRadius = props.handleRadius;
     return {
       width: width,
-      height: width,
+      height: boxHeight != null ? boxHeight : width,
       radius: padding + handleRadius
     };
   }
@@ -992,10 +1054,11 @@
    */
 
   function getBoxValueFromInput(props, x, y) {
-    var ref = getBoxDimensions(props);
-    var width = ref.width;
-    var height = ref.height;
-    var radius = ref.radius;
+    var _getBoxDimensions = getBoxDimensions(props),
+        width = _getBoxDimensions.width,
+        height = _getBoxDimensions.height,
+        radius = _getBoxDimensions.radius;
+
     var handleStart = radius;
     var handleRangeX = width - radius * 2;
     var handleRangeY = height - radius * 2;
@@ -1013,10 +1076,11 @@
    */
 
   function getBoxHandlePosition(props, color) {
-    var ref = getBoxDimensions(props);
-    var width = ref.width;
-    var height = ref.height;
-    var radius = ref.radius;
+    var _getBoxDimensions2 = getBoxDimensions(props),
+        width = _getBoxDimensions2.width,
+        height = _getBoxDimensions2.height,
+        radius = _getBoxDimensions2.radius;
+
     var hsv = color.hsv;
     var handleStart = radius;
     var handleRangeX = width - radius * 2;
@@ -1035,7 +1099,7 @@
   function getBoxGradients(props, color) {
     var hue = color.hue;
     return [// saturation gradient
-    [[0, '#fff'], [100, ("hsl(" + hue + ",100%,50%)")]], // lightness gradient
+    [[0, '#fff'], [100, "hsl(" + hue + ",100%,50%)"]], // lightness gradient
     [[0, 'rgba(0,0,0,0)'], [100, '#000']]];
   }
 
@@ -1057,13 +1121,13 @@
    */
 
   function resolveSvgUrl(url) {
-    if (!BASE_ELEMENTS) { BASE_ELEMENTS = document.getElementsByTagName('base'); } // Sniff useragent string to check if the user is running Safari
+    if (!BASE_ELEMENTS) BASE_ELEMENTS = document.getElementsByTagName('base'); // Sniff useragent string to check if the user is running Safari
 
     var ua = window.navigator.userAgent;
     var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
     var isIos = /iPhone|iPod|iPad/i.test(ua);
     var location = window.location;
-    return (isSafari || isIos) && BASE_ELEMENTS.length > 0 ? ((location.protocol) + "//" + (location.host) + (location.pathname) + (location.search) + url) : url;
+    return (isSafari || isIos) && BASE_ELEMENTS.length > 0 ? location.protocol + "//" + location.host + location.pathname + location.search + url : url;
   }
   /**
    * @desc Get the path commands to draw an svg arc
@@ -1082,7 +1146,7 @@
     var y1 = cy + radius * Math.sin(endAngle);
     var x2 = cx + radius * Math.cos(startAngle);
     var y2 = cy + radius * Math.sin(startAngle);
-    return ("M " + x1 + " " + y1 + " A " + radius + " " + radius + " 0 " + largeArcFlag + " 0 " + x2 + " " + y2);
+    return "M " + x1 + " " + y1 + " A " + radius + " " + radius + " 0 " + largeArcFlag + " 0 " + x2 + " " + y2;
   }
   /**
    * @desc Given a specifc (x, y) position, test if there's a handle there and return its index, else return null.
@@ -1109,47 +1173,48 @@
   var iroColorPickerOptionDefaults = {
     width: 300,
     height: 300,
+    color: '#fff',
+    colors: [],
+    padding: 6,
+    layoutDirection: 'vertical',
+    borderColor: '#fff',
+    borderWidth: 0,
     handleRadius: 8,
     handleSvg: null,
     handleProps: {
       x: 0,
       y: 0
     },
-    color: '#fff',
-    colors: [],
-    borderColor: '#fff',
-    borderWidth: 0,
     wheelLightness: true,
     wheelAngle: 0,
     wheelDirection: 'anticlockwise',
-    layoutDirection: 'vertical',
     sliderSize: null,
     sliderMargin: 12,
-    padding: 6
+    boxHeight: null
   };
 
   exports.IroColor = IroColor;
-  exports.sliderDefaultOptions = sliderDefaultOptions;
-  exports.getSliderStyles = getSliderStyles;
-  exports.getSliderDimensions = getSliderDimensions;
+  exports.getBoxDimensions = getBoxDimensions;
+  exports.getBoxGradients = getBoxGradients;
+  exports.getBoxHandlePosition = getBoxHandlePosition;
+  exports.getBoxStyles = getBoxStyles;
+  exports.getBoxValueFromInput = getBoxValueFromInput;
   exports.getCurrentSliderValue = getCurrentSliderValue;
-  exports.getSliderValueFromInput = getSliderValueFromInput;
-  exports.getSliderHandlePosition = getSliderHandlePosition;
+  exports.getHandleAtPoint = getHandleAtPoint;
+  exports.getSliderDimensions = getSliderDimensions;
   exports.getSliderGradient = getSliderGradient;
   exports.getSliderGradientCoords = getSliderGradientCoords;
+  exports.getSliderHandlePosition = getSliderHandlePosition;
+  exports.getSliderStyles = getSliderStyles;
+  exports.getSliderValueFromInput = getSliderValueFromInput;
+  exports.getSvgArcPath = getSvgArcPath;
   exports.getWheelDimensions = getWheelDimensions;
-  exports.translateWheelAngle = translateWheelAngle;
   exports.getWheelHandlePosition = getWheelHandlePosition;
   exports.getWheelValueFromInput = getWheelValueFromInput;
-  exports.getBoxStyles = getBoxStyles;
-  exports.getBoxDimensions = getBoxDimensions;
-  exports.getBoxValueFromInput = getBoxValueFromInput;
-  exports.getBoxHandlePosition = getBoxHandlePosition;
-  exports.getBoxGradients = getBoxGradients;
-  exports.resolveSvgUrl = resolveSvgUrl;
-  exports.getSvgArcPath = getSvgArcPath;
-  exports.getHandleAtPoint = getHandleAtPoint;
   exports.iroColorPickerOptionDefaults = iroColorPickerOptionDefaults;
+  exports.resolveSvgUrl = resolveSvgUrl;
+  exports.sliderDefaultOptions = sliderDefaultOptions;
+  exports.translateWheelAngle = translateWheelAngle;
 
 })));
 //# sourceMappingURL=iro-core.umd.js.map
