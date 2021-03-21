@@ -1,4 +1,5 @@
 import { IroColor } from './color';
+import { CssGradientStops } from './css';
 import { IroColorPickerOptions } from './colorPickerOptions';
 
 export type SliderShape = 'bar' | 'circle' | '';
@@ -37,11 +38,11 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
   let { width, sliderSize: sliderSize, borderWidth, handleRadius, padding, sliderShape } = props;
   const ishorizontal = props.layoutDirection === 'horizontal';
   // automatically calculate sliderSize if its not defined
-  sliderSize = sliderSize ?? padding * 2 + handleRadius * 2 + borderWidth * 2;
+  sliderSize = sliderSize ?? padding * 2 + handleRadius * 2;
   if (sliderShape === 'circle') {
     return {
       handleStart: props.padding + props.handleRadius,
-      handleRange: width - padding * 2 - handleRadius * 2 - borderWidth * 2,
+      handleRange: width - padding * 2 - handleRadius * 2,
       width: width,
       height: width,
       cx: width / 2,
@@ -144,7 +145,10 @@ export function getSliderHandlePosition(props: Partial<SliderOptions>, color: Ir
   if (ishorizontal) {
     handlePos = -1 * handlePos + handleRange + handleStart * 2;
   } 
-  return {x: ishorizontal ? midPoint : handlePos, y: ishorizontal ? handlePos : midPoint};
+  return {
+    x: ishorizontal ? midPoint : handlePos, 
+    y: ishorizontal ? handlePos : midPoint
+  };
 }
 
 /**
@@ -152,7 +156,7 @@ export function getSliderHandlePosition(props: Partial<SliderOptions>, color: Ir
  * @param props - slider props
  * @param color
  */
-export function getSliderGradient(props: Partial<SliderOptions>, color: IroColor) {
+export function getSliderGradient(props: Partial<SliderOptions>, color: IroColor): CssGradientStops {
   const hsv = color.hsv;
   const rgb = color.rgb;
 

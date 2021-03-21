@@ -1,4 +1,5 @@
 import { IroColor } from './color';
+import { CssGradientStops } from './css';
 import { IroColorPickerOptions } from './colorPickerOptions';
 
 export interface BoxOptions extends IroColorPickerOptions {
@@ -69,7 +70,7 @@ export function getBoxHandlePosition(props: Partial<BoxOptions>, color: IroColor
  * @param props - box props
  * @param color
  */
-export function getBoxGradients(props: Partial<BoxOptions>, color: IroColor) {
+export function getBoxGradients(props: Partial<BoxOptions>, color: IroColor): CssGradientStops[] {
   const hue = color.hue;
   return [
     // saturation gradient

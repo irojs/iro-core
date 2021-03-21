@@ -27,12 +27,18 @@ export function getWheelDimensions(props: Partial<WheelProps>) {
 export function translateWheelAngle(props: Partial<WheelProps>, angle: number, invert?: boolean) {
   const wheelAngle = props.wheelAngle;
   const wheelDirection = props.wheelDirection
-  if ((!invert && wheelDirection === 'clockwise') || (invert && wheelDirection === 'anticlockwise')) {
-    angle = (invert ? 180 : 360) - (wheelAngle - angle);
-  } 
-  else {
+  // inverted and clockwisee
+  if (invert && wheelDirection === 'clockwise')
     angle = wheelAngle + angle;
-  }
+  // clockwise (input handling)
+  else if (wheelDirection === 'clockwise')
+    angle = (360 - wheelAngle) + angle;
+  // inverted and anticlockwise
+  else if (invert && wheelDirection === 'anticlockwise')
+    angle = (wheelAngle + 180) - angle;
+  // anticlockwise (input handling)
+  else if (wheelDirection === 'anticlockwise')
+    angle = wheelAngle - angle;
   // javascript's modulo operator doesn't produce positive numbers with negative input
   // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
   return (angle % 360 + 360) % 360;

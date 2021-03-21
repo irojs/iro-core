@@ -719,12 +719,12 @@
         sliderShape = props.sliderShape;
     var ishorizontal = props.layoutDirection === 'horizontal'; // automatically calculate sliderSize if its not defined
 
-    sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2 + borderWidth * 2;
+    sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2;
 
     if (sliderShape === 'circle') {
       return {
         handleStart: props.padding + props.handleRadius,
-        handleRange: width - padding * 2 - handleRadius * 2 - borderWidth * 2,
+        handleRange: width - padding * 2 - handleRadius * 2,
         width: width,
         height: width,
         cx: width / 2,
@@ -961,15 +961,13 @@
 
   function translateWheelAngle(props, angle, invert) {
     var wheelAngle = props.wheelAngle;
-    var wheelDirection = props.wheelDirection;
+    var wheelDirection = props.wheelDirection; // inverted and clockwisee
 
-    if (!invert && wheelDirection === 'clockwise' || invert && wheelDirection === 'anticlockwise') {
-      angle = (invert ? 180 : 360) - (wheelAngle - angle);
-    } else {
-      angle = wheelAngle + angle;
-    } // javascript's modulo operator doesn't produce positive numbers with negative input
+    if (invert && wheelDirection === 'clockwise') angle = wheelAngle + angle; // clockwise (input handling)
+    else if (wheelDirection === 'clockwise') angle = 360 - wheelAngle + angle; // inverted and anticlockwise
+      else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
+        else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle; // javascript's modulo operator doesn't produce positive numbers with negative input
     // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
-
 
     return (angle % 360 + 360) % 360;
   }
@@ -1170,6 +1168,24 @@
     return null;
   }
 
+  function cssBorderStyles(props) {
+    return {
+      boxSizing: 'border-box',
+      border: props.borderWidth + "px solid " + props.borderColor
+    };
+  }
+  function cssGradient(type, direction, stops) {
+    return type + "-gradient(" + direction + ", " + stops.map(function (_ref) {
+      var o = _ref[0],
+          col = _ref[1];
+      return col + " " + o + "%";
+    }).join(',') + ")";
+  }
+  function cssValue(value) {
+    if (typeof value === 'string') return value;
+    return value + "px";
+  }
+
   var iroColorPickerOptionDefaults = {
     width: 300,
     height: 300,
@@ -1194,6 +1210,9 @@
   };
 
   exports.IroColor = IroColor;
+  exports.cssBorderStyles = cssBorderStyles;
+  exports.cssGradient = cssGradient;
+  exports.cssValue = cssValue;
   exports.getBoxDimensions = getBoxDimensions;
   exports.getBoxGradients = getBoxGradients;
   exports.getBoxHandlePosition = getBoxHandlePosition;

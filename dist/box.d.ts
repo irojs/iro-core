@@ -1,4 +1,5 @@
 import { IroColor } from './color';
+import { CssGradientStops } from './css';
 import { IroColorPickerOptions } from './colorPickerOptions';
 export interface BoxOptions extends IroColorPickerOptions {
     color: IroColor;
@@ -43,4 +44,4 @@ export declare function getBoxHandlePosition(props: Partial<BoxOptions>, color: 
  * @param props - box props
  * @param color
  */
-export declare function getBoxGradients(props: Partial<BoxOptions>, color: IroColor): (string | number)[][][];
+export declare function getBoxGradients(props: Partial<BoxOptions>, color: IroColor): CssGradientStops[];

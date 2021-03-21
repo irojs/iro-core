@@ -1,4 +1,5 @@
 import { IroColor } from './color';
+import { CssGradientStops } from './css';
 import { IroColorPickerOptions } from './colorPickerOptions';
 export declare type SliderShape = 'bar' | 'circle' | '';
 export declare type SliderType = 'red' | 'green' | 'blue' | 'alpha' | 'hue' | 'saturation' | 'value' | 'kelvin' | '';
@@ -74,7 +75,7 @@ export declare function getSliderHandlePosition(props: Partial<SliderOptions>, c
  * @param props - slider props
  * @param color
  */
-export declare function getSliderGradient(props: Partial<SliderOptions>, color: IroColor): any[];
+export declare function getSliderGradient(props: Partial<SliderOptions>, color: IroColor): CssGradientStops;
 /**
  * @desc Get the gradient coords for a slider
  * @param props - slider props
