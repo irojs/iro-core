@@ -14,6 +14,7 @@ export interface IroColorPickerOptions {
   borderColor?: string;
   borderWidth?: number;
   handleRadius?: number;
+  activeHandleRadius?: number;
   handleSvg?: string;
   handleProps?: any;
   wheelLightness?: boolean;
@@ -34,6 +35,7 @@ export const iroColorPickerOptionDefaults: IroColorPickerOptions = {
   borderColor: '#fff',
   borderWidth: 0,
   handleRadius: 8,
+  activeHandleRadius: null,
   handleSvg: null,
   handleProps: {x: 0, y: 0},
   wheelLightness: true,

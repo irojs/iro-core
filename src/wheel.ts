@@ -5,17 +5,46 @@ export interface WheelProps extends IroColorPickerOptions {
   color: IroColor;
 }
 
+const TAU = Math.PI * 2;
+
+// javascript's modulo operator doesn't produce positive numbers with negative input
+// https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
+const mod = (a: number, n: number) => (a % n + n) % n;
+
+// distance between points (x, y) and (0, 0)
+const dist = (x: number, y: number) => Math.sqrt(x * x + y * y);
+
+/**
+ * @param props - wheel props
+ * @internal
+ */
+function getHandleRange(props: Partial<WheelProps>) {
+  return props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
+}
+
+/**
+ * Returns true if point (x, y) lands inside the wheel
+ * @param props - wheel props
+ * @param x 
+ * @param y 
+ */
+export function isInputInsideWheel(props: Partial<WheelProps>, x: number, y: number) {
+  const { cx, cy } = getWheelDimensions(props);
+  const r = props.width / 2;
+  return dist(cx - x, cy - y) < r;
+}
+
 /**
  * @desc Get the point as the center of the wheel
  * @param props - wheel props
  */
 export function getWheelDimensions(props: Partial<WheelProps>) {
-  const rad = props.width / 2;
+  const r = props.width / 2;
   return {
     width: props.width,
-    radius: rad - props.borderWidth,
-    cx: rad,
-    cy: rad
+    radius: r - props.borderWidth,
+    cx: r,
+    cy: r
   };
 }
 
@@ -39,9 +68,7 @@ export function translateWheelAngle(props: Partial<WheelProps>, angle: number, i
   // anticlockwise (input handling)
   else if (wheelDirection === 'anticlockwise')
     angle = wheelAngle - angle;
-  // javascript's modulo operator doesn't produce positive numbers with negative input
-  // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
-  return (angle % 360 + 360) % 360;
+  return mod(angle, 360);
 }
 
 /**
@@ -52,8 +79,8 @@ export function translateWheelAngle(props: Partial<WheelProps>, angle: number, i
 export function getWheelHandlePosition(props: Partial<WheelProps>, color: IroColor) {
   const hsv = color.hsv;
   const { cx, cy } = getWheelDimensions(props);
-  const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
-  const handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (Math.PI / 180);
+  const handleRange = getHandleRange(props);
+  const handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (TAU / 360);
   const handleDist = (hsv.s / 100) * handleRange;
   const direction = props.wheelDirection === 'clockwise' ? -1 : 1;
   return {
@@ -70,14 +97,14 @@ export function getWheelHandlePosition(props: Partial<WheelProps>, color: IroCol
  */
 export function getWheelValueFromInput(props: Partial<WheelProps>, x: number, y: number) {
   const { cx, cy } = getWheelDimensions(props);
-  const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
+  const handleRange = getHandleRange(props);
   x = cx - x;
   y = cy - y;
   // Calculate the hue by converting the angle to radians
-  const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (180 / Math.PI));
+  const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (360 / TAU));
   // Find the point's distance from the center of the wheel
   // This is used to show the saturation level
-  const handleDist = Math.min(Math.sqrt(x * x + y * y), handleRange);
+  const handleDist = Math.min(dist(x, y), handleRange);
   return {
     h: Math.round(hue),
     s: Math.round((100 / handleRange) * handleDist)

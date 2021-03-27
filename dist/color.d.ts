@@ -22,7 +22,10 @@ export interface HslColor {
     l: number;
     a?: number;
 }
-export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
+export interface KelvinColor {
+    kelvin: number;
+}
+export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | KelvinColor | string;
 export declare class IroColor {
     private $;
     private onChange;

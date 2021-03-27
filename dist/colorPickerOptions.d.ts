@@ -11,6 +11,7 @@ export interface IroColorPickerOptions {
     borderColor?: string;
     borderWidth?: number;
     handleRadius?: number;
+    activeHandleRadius?: number;
     handleSvg?: string;
     handleProps?: any;
     wheelLightness?: boolean;

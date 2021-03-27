@@ -4,6 +4,13 @@ export interface WheelProps extends IroColorPickerOptions {
     color: IroColor;
 }
 /**
+ * Returns true if point (x, y) lands inside the wheel
+ * @param props - wheel props
+ * @param x
+ * @param y
+ */
+export declare function isInputInsideWheel(props: Partial<WheelProps>, x: number, y: number): boolean;
+/**
  * @desc Get the point as the center of the wheel
  * @param props - wheel props
  */

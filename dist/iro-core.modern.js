@@ -129,12 +129,14 @@ class IroColor {
     } else if (typeof value === 'object') {
       if (value instanceof IroColor) {
         this.hsv = value.hsv;
-      } else if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
+      } else if ('r' in value && 'g' in value && 'b' in value) {
         this.rgb = value;
-      } else if (typeof value === 'object' && 'h' in value && 's' in value && 'v' in value) {
+      } else if ('h' in value && 's' in value && 'v' in value) {
         this.hsv = value;
-      } else if (typeof value === 'object' && 'h' in value && 's' in value && 'l' in value) {
+      } else if ('h' in value && 's' in value && 'l' in value) {
         this.hsl = value;
+      } else if ('kelvin' in value) {
+        this.kelvin = value.kelvin;
       }
     } else {
       throw new Error('Invalid color value');
@@ -923,17 +925,50 @@ function getSliderGradientCoords(props) {
   };
 }
 
+const TAU = Math.PI * 2; // javascript's modulo operator doesn't produce positive numbers with negative input
+// https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
+
+const mod = (a, n) => (a % n + n) % n; // distance between points (x, y) and (0, 0)
+
+
+const dist = (x, y) => Math.sqrt(x * x + y * y);
+/**
+ * @param props - wheel props
+ * @internal
+ */
+
+
+function getHandleRange(props) {
+  return props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
+}
+/**
+ * Returns true if point (x, y) lands inside the wheel
+ * @param props - wheel props
+ * @param x
+ * @param y
+ */
+
+
+function isInputInsideWheel(props, x, y) {
+  const {
+    cx,
+    cy
+  } = getWheelDimensions(props);
+  const r = props.width / 2;
+  return dist(cx - x, cy - y) < r;
+}
 /**
  * @desc Get the point as the center of the wheel
  * @param props - wheel props
  */
+
 function getWheelDimensions(props) {
-  const rad = props.width / 2;
+  const r = props.width / 2;
   return {
     width: props.width,
-    radius: rad - props.borderWidth,
-    cx: rad,
-    cy: rad
+    radius: r - props.borderWidth,
+    cx: r,
+    cy: r
   };
 }
 /**
@@ -949,10 +984,8 @@ function translateWheelAngle(props, angle, invert) {
   if (invert && wheelDirection === 'clockwise') angle = wheelAngle + angle; // clockwise (input handling)
   else if (wheelDirection === 'clockwise') angle = 360 - wheelAngle + angle; // inverted and anticlockwise
     else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
-      else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle; // javascript's modulo operator doesn't produce positive numbers with negative input
-  // https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
-
-  return (angle % 360 + 360) % 360;
+      else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle;
+  return mod(angle, 360);
 }
 /**
  * @desc Get the current handle position for a given color
@@ -966,8 +999,8 @@ function getWheelHandlePosition(props, color) {
     cx,
     cy
   } = getWheelDimensions(props);
-  const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
-  const handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (Math.PI / 180);
+  const handleRange = getHandleRange(props);
+  const handleAngle = (180 + translateWheelAngle(props, hsv.h, true)) * (TAU / 360);
   const handleDist = hsv.s / 100 * handleRange;
   const direction = props.wheelDirection === 'clockwise' ? -1 : 1;
   return {
@@ -987,14 +1020,14 @@ function getWheelValueFromInput(props, x, y) {
     cx,
     cy
   } = getWheelDimensions(props);
-  const handleRange = props.width / 2 - props.padding - props.handleRadius - props.borderWidth;
+  const handleRange = getHandleRange(props);
   x = cx - x;
   y = cy - y; // Calculate the hue by converting the angle to radians
 
-  const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (180 / Math.PI)); // Find the point's distance from the center of the wheel
+  const hue = translateWheelAngle(props, Math.atan2(-y, -x) * (360 / TAU)); // Find the point's distance from the center of the wheel
   // This is used to show the saturation level
 
-  const handleDist = Math.min(Math.sqrt(x * x + y * y), handleRange);
+  const handleDist = Math.min(dist(x, y), handleRange);
   return {
     h: Math.round(hue),
     s: Math.round(100 / handleRange * handleDist)
@@ -1176,6 +1209,7 @@ const iroColorPickerOptionDefaults = {
   borderColor: '#fff',
   borderWidth: 0,
   handleRadius: 8,
+  activeHandleRadius: null,
   handleSvg: null,
   handleProps: {
     x: 0,
@@ -1189,5 +1223,5 @@ const iroColorPickerOptionDefaults = {
   boxHeight: null
 };
 
-export { IroColor, cssBorderStyles, cssGradient, cssValue, getBoxDimensions, getBoxGradients, getBoxHandlePosition, getBoxStyles, getBoxValueFromInput, getCurrentSliderValue, getHandleAtPoint, getSliderDimensions, getSliderGradient, getSliderGradientCoords, getSliderHandlePosition, getSliderStyles, getSliderValueFromInput, getSvgArcPath, getWheelDimensions, getWheelHandlePosition, getWheelValueFromInput, iroColorPickerOptionDefaults, resolveSvgUrl, sliderDefaultOptions, translateWheelAngle };
+export { IroColor, cssBorderStyles, cssGradient, cssValue, getBoxDimensions, getBoxGradients, getBoxHandlePosition, getBoxStyles, getBoxValueFromInput, getCurrentSliderValue, getHandleAtPoint, getSliderDimensions, getSliderGradient, getSliderGradientCoords, getSliderHandlePosition, getSliderStyles, getSliderValueFromInput, getSvgArcPath, getWheelDimensions, getWheelHandlePosition, getWheelValueFromInput, iroColorPickerOptionDefaults, isInputInsideWheel, resolveSvgUrl, sliderDefaultOptions, translateWheelAngle };
 //# sourceMappingURL=iro-core.modern.js.map

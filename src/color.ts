@@ -103,7 +103,11 @@ export interface HslColor {
   a?: number;
 }
 
-export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | string;
+export interface KelvinColor {
+  kelvin: number;
+}
+
+export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | KelvinColor | string;
 
 export class IroColor {
   // internal color value storage
@@ -146,14 +150,17 @@ export class IroColor {
       if (value instanceof IroColor) {
         this.hsv = value.hsv;
       }
-      else if (typeof value === 'object' && ('r' in value) && ('g' in value) && ('b' in value)) {
+      else if ('r' in value && 'g' in value && 'b' in value) {
         this.rgb = value;
       }
-      else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('v' in value)) {
+      else if ('h' in value && 's' in value && 'v' in value) {
         this.hsv = value;
       }
-      else if (typeof value === 'object' && ('h' in value) && ('s' in value) && ('l' in value)) {
+      else if ('h' in value && 's' in value && 'l' in value) {
         this.hsl = value;
+      }
+      else if ('kelvin' in value) {
+        this.kelvin = value.kelvin;
       }
     }
     else {
