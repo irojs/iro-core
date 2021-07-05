@@ -151,7 +151,7 @@
         }
       } else if (typeof value === 'object') {
         if (value instanceof IroColor) {
-          this.hsv = value.hsv;
+          this.hsva = value.hsva;
         } else if ('r' in value && 'g' in value && 'b' in value) {
           this.rgb = value;
         } else if ('h' in value && 's' in value && 'v' in value) {
@@ -679,7 +679,7 @@
       key: "hslaString",
       get: function get() {
         var hsla = this.hsla;
-        return "hsl(" + hsla.h + ", " + hsla.s + "%, " + hsla.l + "%, " + hsla.a + ")";
+        return "hsla(" + hsla.h + ", " + hsla.s + "%, " + hsla.l + "%, " + hsla.a + ")";
       },
       set: function set(value) {
         this.hslString = value;

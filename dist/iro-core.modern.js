@@ -128,7 +128,7 @@ class IroColor {
       }
     } else if (typeof value === 'object') {
       if (value instanceof IroColor) {
-        this.hsv = value.hsv;
+        this.hsva = value.hsva;
       } else if ('r' in value && 'g' in value && 'b' in value) {
         this.rgb = value;
       } else if ('h' in value && 's' in value && 'v' in value) {
@@ -657,7 +657,7 @@ class IroColor {
 
   get hslaString() {
     const hsla = this.hsla;
-    return `hsl(${hsla.h}, ${hsla.s}%, ${hsla.l}%, ${hsla.a})`;
+    return `hsla(${hsla.h}, ${hsla.s}%, ${hsla.l}%, ${hsla.a})`;
   }
 
   set hslaString(value) {

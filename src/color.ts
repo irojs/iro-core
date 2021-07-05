@@ -148,7 +148,7 @@ export class IroColor {
     }
     else if (typeof value === 'object') {
       if (value instanceof IroColor) {
-        this.hsv = value.hsv;
+        this.hsva = value.hsva;
       }
       else if ('r' in value && 'g' in value && 'b' in value) {
         this.rgb = value;
@@ -605,7 +605,7 @@ export class IroColor {
 
   public get hslaString(): string {
     const hsla = this.hsla;
-    return `hsl(${hsla.h}, ${hsla.s}%, ${hsla.l}%, ${hsla.a})`;
+    return `hsla(${hsla.h}, ${hsla.s}%, ${hsla.l}%, ${hsla.a})`;
   }
 
   public set hslaString(value: string) {
