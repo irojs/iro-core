@@ -31,7 +31,7 @@ const REGEX_HEX_6 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX
 const REGEX_HEX_8 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + '$');
 
 // Kelvin temperature bounds
-const KELVIN_MIN = 2000;
+const KELVIN_MIN = 1000;
 const KELVIN_MAX = 40000;
 
 // Math shorthands
@@ -295,8 +295,9 @@ export class IroColor {
   /**
     * @desc Convert a kelvin temperature to an approx, RGB value
     * @param kelvin - kelvin temperature
+    * @param realValues - flag to issue real values instead integers
   */
-  public static kelvinToRgb(kelvin: number): RgbColor {
+  public static kelvinToRgb(kelvin: number, realValues = false): RgbColor {
     const temp = kelvin / 100;
     let r, g, b;
     if (temp < 66) {
@@ -309,9 +310,9 @@ export class IroColor {
       b = 255
     }
     return {
-      r: clamp(floor(r), 0, 255),
-      g: clamp(floor(g), 0, 255),
-      b: clamp(floor(b), 0, 255)
+      r: clamp(realValues ? r : floor(r), 0, 255),
+      g: clamp(realValues ? g : floor(g), 0, 255),
+      b: clamp(realValues ? b : floor(b), 0, 255)
     };
   }
 
@@ -322,16 +323,28 @@ export class IroColor {
   public static rgbToKelvin(rgb: RgbColor): number {
     const { r, g, b } = rgb;
     const eps = 0.4;
-    let minTemp = KELVIN_MIN;
-    let maxTemp = KELVIN_MAX;
+    let minTemp = (b>0) ? 2000 : KELVIN_MIN;
+    let maxTemp = (b>0) ? KELVIN_MAX : 2000;
     let temp;
-    while (maxTemp - minTemp > eps) {
-      temp = (maxTemp + minTemp) * 0.5;
-      const rgb = IroColor.kelvinToRgb(temp);
-      if ((rgb.b / rgb.r) >= (b / r)) {
-        maxTemp = temp;
-      } else {
-        minTemp = temp;
+    if (b>0) { // temperatures expected to be over 2000k
+      while (maxTemp - minTemp > eps) {
+        temp = (maxTemp + minTemp) * 0.5;
+        const rgb = IroColor.kelvinToRgb(temp, true); // get results in real values
+        if (rgb.b / rgb.r >= b / r) {
+          maxTemp = temp;
+        } else {
+          minTemp = temp;
+        }
+      } 
+    } else { // below 2000k where blue is 0 and red is 255 only green is relevant;
+      while (maxTemp - minTemp > eps) {
+        temp = (maxTemp + minTemp) * 0.5;
+        const rgb = IroColor.kelvinToRgb(temp, true); // get results in real values
+        if (rgb.g >= g) {
+          maxTemp = temp;
+        } else {
+          minTemp = temp;
+        }
       }
     }
     return temp;
