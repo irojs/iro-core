@@ -11,6 +11,9 @@ function _defineProperties(target, props) {
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
   return Constructor;
 }
 
@@ -107,9 +110,7 @@ function intToHex(_int) {
   return _int.toString(16).padStart(2, '0');
 }
 
-var IroColor =
-/*#__PURE__*/
-function () {
+var IroColor = /*#__PURE__*/function () {
   /**
     * @constructor Color object
     * @param value - initial color value
@@ -829,6 +830,90 @@ function getSliderValueFromInput(props, x, y) {
   }
 }
 /**
+ * @desc Clamp slider value between min and max values
+ * @param type - props.sliderType
+ * @param value - value to clamp
+ */
+
+function clampSliderValue(type, value) {
+  function clamp(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+  }
+
+  switch (type) {
+    case 'hue':
+      return clamp(value, 0, 360);
+
+    case 'saturation':
+    case 'value':
+      return clamp(value, 0, 100);
+
+    case 'red':
+    case 'green':
+    case 'blue':
+      return clamp(value, 0, 255);
+
+    case 'alpha':
+      return clamp(value, 0, 1);
+
+    case 'kelvin':
+      // TODO
+      return 0;
+  }
+}
+/**
+ * @desc Get the current slider value from input field input
+ * @param props - slider props
+ * @param e - KeyboardEvent
+ */
+
+function getSliderValueFromInputField(props, e) {
+  // regex for digit or dot (.)
+  if (!/^([0-9]|\.)$/i.test(e.key)) {
+    return 0;
+  }
+
+  var maxlen;
+
+  if (props.sliderType === 'alpha') {
+    maxlen = 4;
+  } else if (props.sliderType === 'kelvin') {
+    maxlen = 10;
+  } else {
+    maxlen = 3;
+  }
+
+  var target = e.target;
+  var valueString = target.value.toString();
+
+  if (target.selectionStart !== undefined) {
+    valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
+  } else {
+    valueString = valueString.length + 1 > maxlen ? valueString : valueString + e.key.toString();
+  }
+
+  var valueNum = +valueString;
+  return clampSliderValue(props.sliderType, valueNum);
+}
+/**
+ * @desc Get the current slider value from clipboard data
+ * @param props - slider props
+ * @param e - ClipboardEvent
+ */
+
+function getSliderValueFromClipboard(props, e) {
+  // allow only whole or decimal numbers
+  var r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
+  var valueString = e.clipboardData.getData('text');
+
+  if (!r.test(valueString)) {
+    return 0;
+  }
+
+  var valueNum = +valueString;
+  return clampSliderValue(props.sliderType, valueNum);
+}
+/**
  * @desc Get the current handle position for a given color
  * @param props - slider props
  * @param color
@@ -999,8 +1084,8 @@ function translateWheelAngle(props, angle, invert) {
 
   if (invert && wheelDirection === 'clockwise') angle = wheelAngle + angle; // clockwise (input handling)
   else if (wheelDirection === 'clockwise') angle = 360 - wheelAngle + angle; // inverted and anticlockwise
-    else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
-      else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle;
+  else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
+  else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle;
   return mod(angle, 360);
 }
 /**
@@ -1243,6 +1328,7 @@ var iroColorPickerOptionDefaults = {
 };
 
 exports.IroColor = IroColor;
+exports.clampSliderValue = clampSliderValue;
 exports.cssBorderStyles = cssBorderStyles;
 exports.cssGradient = cssGradient;
 exports.cssValue = cssValue;
@@ -1258,7 +1344,9 @@ exports.getSliderGradient = getSliderGradient;
 exports.getSliderGradientCoords = getSliderGradientCoords;
 exports.getSliderHandlePosition = getSliderHandlePosition;
 exports.getSliderStyles = getSliderStyles;
+exports.getSliderValueFromClipboard = getSliderValueFromClipboard;
 exports.getSliderValueFromInput = getSliderValueFromInput;
+exports.getSliderValueFromInputField = getSliderValueFromInputField;
 exports.getSvgArcPath = getSvgArcPath;
 exports.getWheelDimensions = getWheelDimensions;
 exports.getWheelHandlePosition = getWheelHandlePosition;
