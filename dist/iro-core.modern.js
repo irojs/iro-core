@@ -698,6 +698,16 @@ function getSliderDimensions(props) {
     padding,
     sliderShape
   } = props;
+  let length;
+
+  if (props.showInput) {
+    length = width - 55;
+  } else {
+    var _props$sliderLength;
+
+    length = (_props$sliderLength = props.sliderLength) != null ? _props$sliderLength : width;
+  }
+
   const ishorizontal = props.layoutDirection === 'horizontal'; // automatically calculate sliderSize if its not defined
 
   sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2;
@@ -715,12 +725,12 @@ function getSliderDimensions(props) {
   } else {
     return {
       handleStart: sliderSize / 2,
-      handleRange: width - sliderSize,
+      handleRange: length - sliderSize,
       radius: sliderSize / 2,
       x: 0,
       y: 0,
-      width: ishorizontal ? sliderSize : width,
-      height: ishorizontal ? width : sliderSize
+      width: ishorizontal ? sliderSize : length,
+      height: ishorizontal ? length : sliderSize
     };
   }
 }

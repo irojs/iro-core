@@ -9,8 +9,11 @@ export interface SliderOptions extends IroColorPickerOptions {
   color: IroColor;
   sliderShape: SliderShape;
   sliderType: SliderType;
+  sliderSize: number;
+  sliderLength: number;
   minTemperature: number;
   maxTemperature: number;
+  showInput: boolean;
 }
 
 export const sliderDefaultOptions = {
@@ -36,6 +39,13 @@ export function getSliderStyles(props: Partial<SliderOptions>) {
  */
 export function getSliderDimensions(props: Partial<SliderOptions>) {
   let { width, sliderSize: sliderSize, borderWidth, handleRadius, padding, sliderShape } = props;
+  let length: number;
+  if (props.showInput) {
+    length = width - 55;
+  } else {
+    length = props.sliderLength ?? width;
+  }
+
   const ishorizontal = props.layoutDirection === 'horizontal';
   // automatically calculate sliderSize if its not defined
   sliderSize = sliderSize ?? padding * 2 + handleRadius * 2;
@@ -52,12 +62,12 @@ export function getSliderDimensions(props: Partial<SliderOptions>) {
   } else {
     return {
       handleStart: sliderSize / 2,
-      handleRange: width - sliderSize,
+      handleRange: length - sliderSize,
       radius: sliderSize / 2,
       x: 0,
       y: 0,
-      width: ishorizontal ? sliderSize : width,
-      height: ishorizontal ? width : sliderSize,
+      width: ishorizontal ? sliderSize : length,
+      height: ishorizontal ? length : sliderSize,
     }
   }
 }
