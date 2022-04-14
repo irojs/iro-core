@@ -62,24 +62,6 @@ export declare function getCurrentSliderValue(props: Partial<SliderOptions>, col
  */
 export declare function getSliderValueFromInput(props: Partial<SliderOptions>, x: number, y: number): number;
 /**
- * @desc Clamp slider value between min and max values
- * @param type - props.sliderType
- * @param value - value to clamp
- */
-export declare function clampSliderValue(type: Partial<SliderType>, value: number): number;
-/**
- * @desc Get the current slider value from input field input
- * @param props - slider props
- * @param e - KeyboardEvent
- */
-export declare function getSliderValueFromInputField(props: Partial<SliderOptions>, e: KeyboardEvent): number;
-/**
- * @desc Get the current slider value from clipboard data
- * @param props - slider props
- * @param e - ClipboardEvent
- */
-export declare function getSliderValueFromClipboard(props: Partial<SliderOptions>, e: ClipboardEvent): number;
-/**
  * @desc Get the current handle position for a given color
  * @param props - slider props
  * @param color

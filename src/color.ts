@@ -450,14 +450,14 @@ export class IroColor {
     return {
       r: round(r),
       g: round(g),
-      b: round(b),
+      b: round(b)
     };
   }
 
   public set rgb(value: RgbColor) {
     this.hsv = {
       ...IroColor.rgbToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? this.alpha : value.a
     };
   }
 
@@ -481,7 +481,7 @@ export class IroColor {
   public set hsl(value: HslColor) {
     this.hsv = {
       ...IroColor.hslToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? this.alpha : value.a
     };
   }
 

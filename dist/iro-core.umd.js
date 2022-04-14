@@ -502,7 +502,7 @@
       },
       set: function set(value) {
         this.hsv = _extends({}, IroColor.rgbToHsv(value), {
-          a: value.a === undefined ? 1 : value.a
+          a: value.a === undefined ? this.alpha : value.a
         });
       }
     }, {
@@ -531,7 +531,7 @@
       },
       set: function set(value) {
         this.hsv = _extends({}, IroColor.hslToHsv(value), {
-          a: value.a === undefined ? 1 : value.a
+          a: value.a === undefined ? this.alpha : value.a
         });
       }
     }, {
@@ -835,90 +835,6 @@
     }
   }
   /**
-   * @desc Clamp slider value between min and max values
-   * @param type - props.sliderType
-   * @param value - value to clamp
-   */
-
-  function clampSliderValue(type, value) {
-    function clamp(num, min, max) {
-      return Math.min(Math.max(num, min), max);
-    }
-
-    switch (type) {
-      case 'hue':
-        return clamp(value, 0, 360);
-
-      case 'saturation':
-      case 'value':
-        return clamp(value, 0, 100);
-
-      case 'red':
-      case 'green':
-      case 'blue':
-        return clamp(value, 0, 255);
-
-      case 'alpha':
-        return clamp(value, 0, 1);
-
-      case 'kelvin':
-        // TODO
-        return 0;
-    }
-  }
-  /**
-   * @desc Get the current slider value from input field input
-   * @param props - slider props
-   * @param e - KeyboardEvent
-   */
-
-  function getSliderValueFromInputField(props, e) {
-    // regex for digit or dot (.)
-    if (!/^([0-9]|\.)$/i.test(e.key)) {
-      return 0;
-    }
-
-    var maxlen;
-
-    if (props.sliderType === 'alpha') {
-      maxlen = 4;
-    } else if (props.sliderType === 'kelvin') {
-      maxlen = 10;
-    } else {
-      maxlen = 3;
-    }
-
-    var target = e.target;
-    var valueString = target.value.toString();
-
-    if (target.selectionStart !== undefined) {
-      valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
-    } else {
-      valueString = valueString.length + 1 > maxlen ? valueString : valueString + e.key.toString();
-    }
-
-    var valueNum = +valueString;
-    return clampSliderValue(props.sliderType, valueNum);
-  }
-  /**
-   * @desc Get the current slider value from clipboard data
-   * @param props - slider props
-   * @param e - ClipboardEvent
-   */
-
-  function getSliderValueFromClipboard(props, e) {
-    // allow only whole or decimal numbers
-    var r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
-    var valueString = e.clipboardData.getData('text');
-
-    if (!r.test(valueString)) {
-      return 0;
-    }
-
-    var valueNum = +valueString;
-    return clampSliderValue(props.sliderType, valueNum);
-  }
-  /**
    * @desc Get the current handle position for a given color
    * @param props - slider props
    * @param color
@@ -1025,6 +941,92 @@
       x2: ishorizontal ? '0%' : '100%',
       y2: '0%'
     };
+  }
+
+  /**
+   * @desc Clamp slider value between min and max values
+   * @param type - props.sliderType
+   * @param value - value to clamp
+   */
+  function clampSliderValue(props, value) {
+    function clamp(num, min, max) {
+      return Math.min(Math.max(num, min), max);
+    }
+
+    switch (props.sliderType) {
+      case 'hue':
+        return clamp(value, 0, 360);
+
+      case 'saturation':
+      case 'value':
+        return clamp(value, 0, 100);
+
+      case 'red':
+      case 'green':
+      case 'blue':
+        return clamp(value, 0, 255);
+
+      case 'alpha':
+        return clamp(value, 0, 1);
+
+      case 'kelvin':
+        // TODO
+        var minTemperature = props.minTemperature,
+            maxTemperature = props.maxTemperature;
+        return clamp(value, minTemperature, maxTemperature);
+    }
+  }
+  /**
+   * @desc Get the current slider value from input field input
+   * @param props - slider props
+   * @param e - KeyboardEvent
+   */
+
+  function getSliderValueFromInputField(props, e) {
+    // regex for digit or dot (.)
+    if (!/^([0-9]|\.)$/i.test(e.key)) {
+      return 0;
+    }
+
+    var maxlen;
+
+    if (props.sliderType === 'alpha') {
+      maxlen = 4;
+    } else if (props.sliderType === 'kelvin') {
+      maxlen = 5;
+    } else {
+      maxlen = 3;
+    }
+
+    var target = e.target;
+    var valueString = target.value.toString();
+
+    if (target.selectionStart !== undefined) {
+      valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
+    } else {
+      valueString = valueString.length + 1 > maxlen ? valueString : valueString + e.key.toString();
+    }
+
+    var valueNum = +valueString;
+    return clampSliderValue(props, valueNum);
+  }
+  /**
+   * @desc Get the current slider value from clipboard data
+   * @param props - slider props
+   * @param e - ClipboardEvent
+   */
+
+  function getSliderValueFromClipboard(props, e) {
+    // allow only whole or decimal numbers
+    var r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
+    var valueString = e.clipboardData.getData('text');
+
+    if (!r.test(valueString)) {
+      return 0;
+    }
+
+    var valueNum = +valueString;
+    return clampSliderValue(props, valueNum);
   }
 
   var TAU = Math.PI * 2; // javascript's modulo operator doesn't produce positive numbers with negative input
