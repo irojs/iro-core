@@ -105,6 +105,7 @@ export interface HslColor {
 
 export interface KelvinColor {
   kelvin: number;
+  _kelvin: number;
 }
 
 export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | KelvinColor | string;
@@ -116,6 +117,7 @@ export class IroColor {
   private initialValue: HsvColor;
 
   public index: number;
+  public _kelvin: number;
 
   /**
     * @constructor Color object
@@ -411,11 +413,29 @@ export class IroColor {
   }
 
   public get kelvin(): number {
-    return IroColor.rgbToKelvin(this.rgb);
+    /** Rgb to kelvin conversion is a little funky, producing results
+     * that differ from the original value.
+     * Check if rgb values are equal and return RGB to kelvin conversion
+     * only if necessary
+     */
+    let res: number;
+    let rgb = IroColor.kelvinToRgb(this._kelvin);
+
+    if (
+      rgb.r === this.rgb.r &&
+      rgb.g === this.rgb.g &&
+      rgb.b === this.rgb.b
+    ) {
+      res = this._kelvin;
+    } else {
+      res = IroColor.rgbToKelvin(this.rgb);
+    }
+    return res;
   }
 
   public set kelvin(value: number) {
     this.rgb = IroColor.kelvinToRgb(value);
+    this._kelvin = value;
   }
 
   public get red(): number {
