@@ -114,6 +114,7 @@ export declare class IroColor {
     set blue(value: number);
     get rgb(): RgbColor;
     set rgb(value: RgbColor);
+    get raw_rgb(): RgbColor;
     get rgba(): RgbColor;
     set rgba(value: RgbColor);
     get hsl(): HslColor;
