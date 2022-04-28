@@ -18,7 +18,7 @@ export declare function clampSliderValue(props: Partial<InputOptions>, value: nu
  * @param props - slider props
  * @param e - KeyboardEvent
  */
-export declare function getSliderValueFromInputField(props: Partial<InputOptions>, e: KeyboardEvent): number;
+export declare function getSliderValueFromInputField(e: KeyboardEvent): number;
 /**
  * @desc Get the current slider value from clipboard data
  * @param props - slider props

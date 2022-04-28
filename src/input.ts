@@ -30,7 +30,7 @@ export interface InputOptions extends IroColorPickerOptions {
       return clamp(value, 0, 255);
     case 'alpha':
       return clamp(value, 0, 1);
-    case 'kelvin': // TODO
+    case 'kelvin':
       const { minTemperature, maxTemperature } = props;
       return clamp(value, minTemperature, maxTemperature);
     }
@@ -41,31 +41,23 @@ export interface InputOptions extends IroColorPickerOptions {
  * @param props - slider props
  * @param e - KeyboardEvent
  */
-export function getSliderValueFromInputField(props: Partial<InputOptions>, e: KeyboardEvent) {
+export function getSliderValueFromInputField(e: KeyboardEvent) {
+  let target = (e.target as HTMLInputElement);
+  let valueNum = parseInt(target.value);
   // regex for digit or dot (.)
   if (!/^([0-9]|\.)$/i.test((e).key)) {
-    return 0;
+    e.preventDefault();
+    return valueNum;
   }
-  let maxlen: number;
-  if (props.sliderType === 'alpha') {
-    maxlen = 4;
-  } else if (props.sliderType === 'kelvin') {
-    maxlen = 5;
-  } else {
-    maxlen = 3;
-  }
-
-  let target = (e.target as HTMLInputElement);
   let valueString = target.value.toString();
-  if (target.selectionStart !== undefined) {
+  if (target.selectionStart !== undefined) { // cursor position
     valueString = valueString.substring(0, target.selectionStart) +
       e.key.toString() +
       valueString.substring(target.selectionEnd);
   } else {
-    valueString = valueString.length + 1 > maxlen ? valueString : valueString + e.key.toString();
+    valueString = valueString + e.key.toString();
   }
-  const valueNum = +valueString;
-  return clampSliderValue(props, valueNum);
+  return +valueString;
 }
 
 /**

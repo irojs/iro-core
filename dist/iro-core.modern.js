@@ -994,7 +994,6 @@ function clampSliderValue(props, value) {
       return clamp(value, 0, 1);
 
     case 'kelvin':
-      // TODO
       const {
         minTemperature,
         maxTemperature
@@ -1008,33 +1007,25 @@ function clampSliderValue(props, value) {
  * @param e - KeyboardEvent
  */
 
-function getSliderValueFromInputField(props, e) {
-  // regex for digit or dot (.)
-  if (!/^([0-9]|\.)$/i.test(e.key)) {
-    return 0;
-  }
-
-  let maxlen;
-
-  if (props.sliderType === 'alpha') {
-    maxlen = 4;
-  } else if (props.sliderType === 'kelvin') {
-    maxlen = 5;
-  } else {
-    maxlen = 3;
-  }
-
+function getSliderValueFromInputField(e) {
   let target = e.target;
+  let valueNum = parseInt(target.value); // regex for digit or dot (.)
+
+  if (!/^([0-9]|\.)$/i.test(e.key)) {
+    e.preventDefault();
+    return valueNum;
+  }
+
   let valueString = target.value.toString();
 
   if (target.selectionStart !== undefined) {
+    // cursor position
     valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
   } else {
-    valueString = valueString.length + 1 > maxlen ? valueString : valueString + e.key.toString();
+    valueString = valueString + e.key.toString();
   }
 
-  const valueNum = +valueString;
-  return clampSliderValue(props, valueNum);
+  return +valueString;
 }
 /**
  * @desc Get the current slider value from clipboard data
