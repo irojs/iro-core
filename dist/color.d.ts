@@ -24,6 +24,7 @@ export interface HslColor {
 }
 export interface KelvinColor {
     kelvin: number;
+    _kelvin: number;
 }
 export declare type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | KelvinColor | string;
 export declare class IroColor {
@@ -31,6 +32,7 @@ export declare class IroColor {
     private onChange;
     private initialValue;
     index: number;
+    _kelvin: number;
     /**
       * @constructor Color object
       * @param value - initial color value
@@ -112,6 +114,7 @@ export declare class IroColor {
     set blue(value: number);
     get rgb(): RgbColor;
     set rgb(value: RgbColor);
+    get raw_rgb(): RgbColor;
     get rgba(): RgbColor;
     set rgba(value: RgbColor);
     get hsl(): HslColor;

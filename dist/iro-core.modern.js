@@ -44,9 +44,6 @@ const REGEX_HEX_4 = new RegExp(HEX_START + HEX_INT_SINGLE + HEX_INT_SINGLE + HEX
 const REGEX_HEX_6 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + '$');
 const REGEX_HEX_8 = new RegExp(HEX_START + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + HEX_INT_DOUBLE + '$'); // Kelvin temperature bounds
 
-const KELVIN_MIN = 2000;
-const KELVIN_MAX = 40000; // Math shorthands
-
 const {
   log,
   round,
@@ -289,23 +286,51 @@ class IroColor {
 
 
   static kelvinToRgb(kelvin) {
-    const temp = kelvin / 100;
-    let r, g, b;
+    var temperature = kelvin / 100.0;
+    var r, g, b;
 
-    if (temp < 66) {
+    if (temperature < 66.0) {
       r = 255;
-      g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log(g);
-      b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log(b);
     } else {
-      r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log(r);
-      g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log(g);
+      r = temperature - 55.0;
+      r = 351.97690566805693 + 0.114206453784165 * r - 40.25366309332127 * Math.log(r);
+      if (r < 0) r = 0;
+      if (r > 255) r = 255;
+    }
+    /* Calculate g */
+
+
+    if (temperature < 66.0) {
+      g = temperature - 2;
+      g = -155.25485562709179 - 0.44596950469579133 * g + 104.49216199393888 * Math.log(g);
+      if (g < 0) g = 0;
+      if (g > 255) g = 255;
+    } else {
+      g = temperature - 50.0;
+      g = 325.4494125711974 + 0.07943456536662342 * g - 28.0852963507957 * Math.log(g);
+      if (g < 0) g = 0;
+      if (g > 255) g = 255;
+    }
+    /* Calculate b */
+
+
+    if (temperature >= 66.0) {
       b = 255;
+    } else {
+      if (temperature <= 20.0) {
+        b = 0;
+      } else {
+        b = temperature - 10;
+        b = -254.76935184120902 + 0.8274096064007395 * b + 115.67994401066147 * Math.log(b);
+        if (b < 0) b = 0;
+        if (b > 255) b = 255;
+      }
     }
 
     return {
-      r: clamp(floor(r), 0, 255),
-      g: clamp(floor(g), 0, 255),
-      b: clamp(floor(b), 0, 255)
+      r: r,
+      b: b,
+      g: g
     };
   }
   /**
@@ -315,29 +340,23 @@ class IroColor {
 
 
   static rgbToKelvin(rgb) {
-    const {
-      r,
-      g,
-      b
-    } = rgb;
-    const eps = 0.4;
-    let minTemp = KELVIN_MIN;
-    let maxTemp = KELVIN_MAX;
-    let temp;
+    var temperature, testRGB;
+    var epsilon = 0.4;
+    var minTemperature = 1000;
+    var maxTemperature = 40000;
 
-    while (maxTemp - minTemp > eps) {
-      temp = (maxTemp + minTemp) * 0.5;
+    while (maxTemperature - minTemperature > epsilon) {
+      temperature = (maxTemperature + minTemperature) / 2;
+      testRGB = IroColor.kelvinToRgb(temperature);
 
-      const _rgb = IroColor.kelvinToRgb(temp);
-
-      if (_rgb.b / _rgb.r >= b / r) {
-        maxTemp = temp;
+      if (testRGB.b / testRGB.r >= rgb.b / rgb.r) {
+        maxTemperature = temperature;
       } else {
-        minTemp = temp;
+        minTemperature = temperature;
       }
     }
 
-    return temp;
+    return temperature;
   }
 
   get hsv() {
@@ -425,7 +444,7 @@ class IroColor {
   }
 
   get kelvin() {
-    return IroColor.rgbToKelvin(this.rgb);
+    return round(IroColor.rgbToKelvin(this.raw_rgb));
   }
 
   set kelvin(value) {
@@ -480,8 +499,21 @@ class IroColor {
 
   set rgb(value) {
     this.hsv = _extends({}, IroColor.rgbToHsv(value), {
-      a: value.a === undefined ? 1 : value.a
+      a: value.a === undefined ? this.alpha : value.a
     });
+  }
+
+  get raw_rgb() {
+    const {
+      r,
+      g,
+      b
+    } = IroColor.hsvToRgb(this.$);
+    return {
+      r: r,
+      g: g,
+      b: b
+    };
   }
 
   get rgba() {
@@ -509,7 +541,7 @@ class IroColor {
 
   set hsl(value) {
     this.hsv = _extends({}, IroColor.hslToHsv(value), {
-      a: value.a === undefined ? 1 : value.a
+      a: value.a === undefined ? this.alpha : value.a
     });
   }
 
@@ -666,6 +698,112 @@ class IroColor {
 
 }
 
+/**
+ * @desc Get input field dimensions
+ * @param props - InputOptions
+ */
+function getInputDimensions(props) {
+  let {
+    sliderSize,
+    layoutDirection
+  } = props;
+  let inputWidth;
+  let fontSize;
+
+  if (layoutDirection === 'vertical') {
+    inputWidth = 30;
+    fontSize = 12;
+  } else {
+    inputWidth = sliderSize <= 30 ? 26 : sliderSize;
+    fontSize = sliderSize <= 30 ? 10 : 12;
+  }
+
+  return {
+    inputWidth: inputWidth,
+    inputHeight: 18,
+    fontSize: fontSize
+  };
+}
+/**
+ * @desc Clamp slider value between min and max values
+ * @param type - props.sliderType
+ * @param value - value to clamp
+ */
+
+function clampSliderValue(props, value) {
+  function clamp(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+  }
+
+  switch (props.sliderType) {
+    case 'hue':
+      return clamp(value, 0, 360);
+
+    case 'saturation':
+    case 'value':
+      return clamp(value, 0, 100);
+
+    case 'red':
+    case 'green':
+    case 'blue':
+      return clamp(value, 0, 255);
+
+    case 'alpha':
+      return clamp(value, 0, 1);
+
+    case 'kelvin':
+      const {
+        minTemperature,
+        maxTemperature
+      } = props;
+      return clamp(value, minTemperature, maxTemperature);
+  }
+}
+/**
+ * @desc Get the current slider value from input field input
+ * @param props - slider props
+ * @param e - KeyboardEvent
+ */
+
+function getSliderValueFromInputField(e) {
+  let target = e.target;
+  let valueNum = parseInt(target.value); // regex for digit or dot (.)
+
+  if (!/^([0-9]|\.)$/i.test(e.key)) {
+    e.preventDefault();
+    return valueNum;
+  }
+
+  let valueString = target.value.toString();
+
+  if (target.selectionStart !== undefined) {
+    // cursor position
+    valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
+  } else {
+    valueString = valueString + e.key.toString();
+  }
+
+  return +valueString;
+}
+/**
+ * @desc Get the current slider value from clipboard data
+ * @param props - slider props
+ * @param e - ClipboardEvent
+ */
+
+function getSliderValueFromClipboard(props, e) {
+  // allow only whole or decimal numbers
+  const r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
+  const valueString = e.clipboardData.getData('text');
+
+  if (!r.test(valueString)) {
+    return 0;
+  }
+
+  const valueNum = +valueString;
+  return clampSliderValue(props, valueNum);
+}
+
 const sliderDefaultOptions = {
   sliderShape: 'bar',
   sliderType: 'value',
@@ -698,7 +836,30 @@ function getSliderDimensions(props) {
     padding,
     sliderShape
   } = props;
-  const ishorizontal = props.layoutDirection === 'horizontal'; // automatically calculate sliderSize if its not defined
+  const ishorizontal = props.layoutDirection === 'horizontal';
+  let length;
+
+  if (props.sliderLength) {
+    length = props.sliderLength;
+  } else {
+    // automatically calculate slider length
+    length = width - handleRadius;
+
+    if (props.showInput) {
+      let {
+        inputWidth,
+        inputHeight
+      } = getInputDimensions(props);
+      length -= ishorizontal ? inputHeight : inputWidth;
+      length -= 3; // padding
+    }
+
+    if (props.showLabel) {
+      length -= ishorizontal ? 12 : 10;
+      length -= 3; // padding
+    }
+  } // automatically calculate sliderSize if its not defined
+
 
   sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2;
 
@@ -715,12 +876,12 @@ function getSliderDimensions(props) {
   } else {
     return {
       handleStart: sliderSize / 2,
-      handleRange: width - sliderSize,
+      handleRange: length - sliderSize,
       radius: sliderSize / 2,
       x: 0,
       y: 0,
-      width: ishorizontal ? sliderSize : width,
-      height: ishorizontal ? width : sliderSize
+      width: ishorizontal ? sliderSize : length,
+      height: ishorizontal ? length : sliderSize
     };
   }
 }
@@ -753,7 +914,7 @@ function getCurrentSliderValue(props, color) {
         maxTemperature
       } = props;
       const temperatureRange = maxTemperature - minTemperature;
-      const percent = (color.kelvin - minTemperature) / temperatureRange * 100; // clmap percentage
+      const percent = (color.kelvin - minTemperature) / temperatureRange * 100; // clamp percentage
 
       return Math.max(0, Math.min(percent, 100));
 
@@ -983,8 +1144,8 @@ function translateWheelAngle(props, angle, invert) {
 
   if (invert && wheelDirection === 'clockwise') angle = wheelAngle + angle; // clockwise (input handling)
   else if (wheelDirection === 'clockwise') angle = 360 - wheelAngle + angle; // inverted and anticlockwise
-    else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
-      else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle;
+  else if (invert && wheelDirection === 'anticlockwise') angle = wheelAngle + 180 - angle; // anticlockwise (input handling)
+  else if (wheelDirection === 'anticlockwise') angle = wheelAngle - angle;
   return mod(angle, 360);
 }
 /**
@@ -1223,5 +1384,5 @@ const iroColorPickerOptionDefaults = {
   boxHeight: null
 };
 
-export { IroColor, cssBorderStyles, cssGradient, cssValue, getBoxDimensions, getBoxGradients, getBoxHandlePosition, getBoxStyles, getBoxValueFromInput, getCurrentSliderValue, getHandleAtPoint, getSliderDimensions, getSliderGradient, getSliderGradientCoords, getSliderHandlePosition, getSliderStyles, getSliderValueFromInput, getSvgArcPath, getWheelDimensions, getWheelHandlePosition, getWheelValueFromInput, iroColorPickerOptionDefaults, isInputInsideWheel, resolveSvgUrl, sliderDefaultOptions, translateWheelAngle };
+export { IroColor, clampSliderValue, cssBorderStyles, cssGradient, cssValue, getBoxDimensions, getBoxGradients, getBoxHandlePosition, getBoxStyles, getBoxValueFromInput, getCurrentSliderValue, getHandleAtPoint, getInputDimensions, getSliderDimensions, getSliderGradient, getSliderGradientCoords, getSliderHandlePosition, getSliderStyles, getSliderValueFromClipboard, getSliderValueFromInput, getSliderValueFromInputField, getSvgArcPath, getWheelDimensions, getWheelHandlePosition, getWheelValueFromInput, iroColorPickerOptionDefaults, isInputInsideWheel, resolveSvgUrl, sliderDefaultOptions, translateWheelAngle };
 //# sourceMappingURL=iro-core.modern.js.map

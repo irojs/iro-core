@@ -7,8 +7,12 @@ export interface SliderOptions extends IroColorPickerOptions {
     color: IroColor;
     sliderShape: SliderShape;
     sliderType: SliderType;
+    sliderSize: number;
+    sliderLength: number;
     minTemperature: number;
     maxTemperature: number;
+    showInput: boolean;
+    showLabel: boolean;
 }
 export declare const sliderDefaultOptions: {
     sliderShape: string;

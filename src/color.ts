@@ -105,6 +105,7 @@ export interface HslColor {
 
 export interface KelvinColor {
   kelvin: number;
+  _kelvin: number;
 }
 
 export type IroColorValue = IroColor | HsvColor | RgbColor | HslColor | KelvinColor | string;
@@ -116,6 +117,7 @@ export class IroColor {
   private initialValue: HsvColor;
 
   public index: number;
+  public _kelvin: number;
 
   /**
     * @constructor Color object
@@ -296,23 +298,43 @@ export class IroColor {
     * @desc Convert a kelvin temperature to an approx, RGB value
     * @param kelvin - kelvin temperature
   */
-  public static kelvinToRgb(kelvin: number): RgbColor {
-    const temp = kelvin / 100;
-    let r, g, b;
-    if (temp < 66) {
-      r = 255
-      g = -155.25485562709179 - 0.44596950469579133 * (g = temp-2) + 104.49216199393888 * log(g)
-      b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp-10) + 115.67994401066147 * log(b)
+   public static kelvinToRgb(kelvin: number): RgbColor {
+    var temperature = kelvin / 100.0;
+    var r, g, b;
+    if (temperature < 66.0) {
+      r = 255;
     } else {
-      r = 351.97690566805693 + 0.114206453784165 * (r = temp-55) - 40.25366309332127 * log(r)
-      g = 325.4494125711974 + 0.07943456536662342 * (g = temp-50) - 28.0852963507957 * log(g)
-      b = 255
+      r = temperature - 55.0;
+      r = 351.97690566805693+ 0.114206453784165 * r - 40.25366309332127 * Math.log(r);
+      if (r < 0) r = 0;
+      if (r > 255) r = 255;
     }
-    return {
-      r: clamp(floor(r), 0, 255),
-      g: clamp(floor(g), 0, 255),
-      b: clamp(floor(b), 0, 255)
-    };
+    /* Calculate g */
+    if (temperature < 66.0) {
+      g = temperature - 2;
+      g = -155.25485562709179 - 0.44596950469579133 * g + 104.49216199393888 * Math.log(g);
+      if (g < 0) g = 0;
+      if (g > 255) g = 255;
+    } else {
+      g = temperature - 50.0;
+      g = 325.4494125711974 + 0.07943456536662342 * g - 28.0852963507957 * Math.log(g);
+      if (g < 0) g = 0;
+      if (g > 255) g = 255;
+    }
+    /* Calculate b */
+    if (temperature >= 66.0) {
+      b = 255;
+    } else {
+      if (temperature <= 20.0) {
+        b = 0;
+      } else {
+        b = temperature - 10;
+        b = -254.76935184120902 + 0.8274096064007395 * b + 115.67994401066147 * Math.log(b);
+        if (b < 0) b = 0;
+        if (b > 255) b = 255;
+      }
+    }
+    return {r: r, b: b, g: g};
   }
 
    /**
@@ -320,21 +342,20 @@ export class IroColor {
     * @param kelvin - kelvin temperature
   */
   public static rgbToKelvin(rgb: RgbColor): number {
-    const { r, g, b } = rgb;
-    const eps = 0.4;
-    let minTemp = KELVIN_MIN;
-    let maxTemp = KELVIN_MAX;
-    let temp;
-    while (maxTemp - minTemp > eps) {
-      temp = (maxTemp + minTemp) * 0.5;
-      const rgb = IroColor.kelvinToRgb(temp);
-      if ((rgb.b / rgb.r) >= (b / r)) {
-        maxTemp = temp;
+    var temperature, testRGB;
+    var epsilon=0.4;
+    var minTemperature = 1000;
+    var maxTemperature = 40000;
+    while (maxTemperature - minTemperature > epsilon) {
+      temperature = (maxTemperature + minTemperature) / 2;
+      testRGB = IroColor.kelvinToRgb(temperature);
+      if ((testRGB.b / testRGB.r) >= (rgb.b / rgb.r)) {
+        maxTemperature = temperature;
       } else {
-        minTemp = temp;
+        minTemperature = temperature;
       }
     }
-    return temp;
+    return temperature;
   }
 
   public get hsv(): HsvColor {
@@ -411,7 +432,7 @@ export class IroColor {
   }
 
   public get kelvin(): number {
-    return IroColor.rgbToKelvin(this.rgb);
+    return round(IroColor.rgbToKelvin(this.raw_rgb));
   }
 
   public set kelvin(value: number) {
@@ -450,14 +471,23 @@ export class IroColor {
     return {
       r: round(r),
       g: round(g),
-      b: round(b),
+      b: round(b)
     };
   }
 
   public set rgb(value: RgbColor) {
     this.hsv = {
       ...IroColor.rgbToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? this.alpha : value.a
+    };
+  }
+
+  public get raw_rgb(): RgbColor {
+    const {r, g, b} = IroColor.hsvToRgb(this.$);
+    return {
+      r: r,
+      g: g,
+      b: b
     };
   }
 
@@ -481,7 +511,7 @@ export class IroColor {
   public set hsl(value: HslColor) {
     this.hsv = {
       ...IroColor.hslToHsv(value), 
-      a: (value.a === undefined) ? 1 : value.a
+      a: (value.a === undefined) ? this.alpha : value.a
     };
   }
 
