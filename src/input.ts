@@ -5,8 +5,33 @@ import { IroColorPickerOptions } from './colorPickerOptions';
 export interface InputOptions extends IroColorPickerOptions {
   color: IroColor;
   sliderType: SliderType;
+  sliderSize: number;
   minTemperature: number;
   maxTemperature: number;
+}
+
+/**
+ * @desc Get input field dimensions
+ * @param props - InputOptions
+ */
+ export function getInputDimensions(props: Partial<InputOptions>) {
+  let {sliderSize, layoutDirection} = props;
+  let inputWidth: number;
+  let fontSize: number;
+
+  if (layoutDirection === 'vertical') {
+    inputWidth = 30;
+    fontSize = 12;
+  } else {
+    inputWidth = sliderSize <= 30 ? 26 : sliderSize;
+    fontSize = sliderSize <= 30 ? 10 : 12;
+  }
+
+  return {
+    inputWidth: inputWidth,
+    inputHeight: 18,
+    fontSize: fontSize
+  }
 }
 
 /**

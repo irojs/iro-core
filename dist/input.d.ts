@@ -4,9 +4,19 @@ import { IroColorPickerOptions } from './colorPickerOptions';
 export interface InputOptions extends IroColorPickerOptions {
     color: IroColor;
     sliderType: SliderType;
+    sliderSize: number;
     minTemperature: number;
     maxTemperature: number;
 }
+/**
+ * @desc Get input field dimensions
+ * @param props - InputOptions
+ */
+export declare function getInputDimensions(props: Partial<InputOptions>): {
+    inputWidth: number;
+    inputHeight: number;
+    fontSize: number;
+};
 /**
  * @desc Clamp slider value between min and max values
  * @param type - props.sliderType

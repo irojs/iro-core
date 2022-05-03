@@ -1,6 +1,7 @@
 import { IroColor } from './color';
 import { CssGradientStops } from './css';
 import { IroColorPickerOptions } from './colorPickerOptions';
+import { getInputDimensions } from './input';
 
 export type SliderShape = 'bar' | 'circle' | '';
 export type SliderType = 'red' | 'green' | 'blue' |'alpha' | 'hue' | 'saturation' | 'value' | 'kelvin' | '';
@@ -14,6 +15,7 @@ export interface SliderOptions extends IroColorPickerOptions {
   minTemperature: number;
   maxTemperature: number;
   showInput: boolean;
+  showLabel: boolean;
 }
 
 export const sliderDefaultOptions = {
@@ -39,14 +41,25 @@ export function getSliderStyles(props: Partial<SliderOptions>) {
  */
 export function getSliderDimensions(props: Partial<SliderOptions>) {
   let { width, sliderSize: sliderSize, borderWidth, handleRadius, padding, sliderShape } = props;
+  const ishorizontal = props.layoutDirection === 'horizontal';
   let length: number;
-  if (props.showInput) {
-    length = width - 55;
+
+  if (props.sliderLength) {
+    length = props.sliderLength;
   } else {
-    length = props.sliderLength ?? width;
+    // automatically calculate slider length
+    length = width - handleRadius;
+    if (props.showInput) {
+      let { inputWidth, inputHeight } = getInputDimensions(props);
+      length -= ishorizontal ? inputHeight : inputWidth;
+      length -= 3; // padding
+    }
+    if (props.showLabel) {
+      length -= ishorizontal ? 12 : 10;
+      length -= 3; // padding
+    }
   }
 
-  const ishorizontal = props.layoutDirection === 'horizontal';
   // automatically calculate sliderSize if its not defined
   sliderSize = sliderSize ?? padding * 2 + handleRadius * 2;
   if (sliderShape === 'circle') {
@@ -94,7 +107,7 @@ export function getCurrentSliderValue(props: Partial<SliderOptions>, color: IroC
       const { minTemperature, maxTemperature } = props;
       const temperatureRange = maxTemperature - minTemperature;
       const percent = ((color.kelvin - minTemperature) / temperatureRange) * 100;
-      // clmap percentage
+      // clamp percentage
       return Math.max(0, Math.min(percent, 100));
     case 'hue':
       return hsva.h /= 3.6;

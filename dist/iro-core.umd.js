@@ -725,6 +725,108 @@
     return IroColor;
   }();
 
+  /**
+   * @desc Get input field dimensions
+   * @param props - InputOptions
+   */
+  function getInputDimensions(props) {
+    var sliderSize = props.sliderSize,
+        layoutDirection = props.layoutDirection;
+    var inputWidth;
+    var fontSize;
+
+    if (layoutDirection === 'vertical') {
+      inputWidth = 30;
+      fontSize = 12;
+    } else {
+      inputWidth = sliderSize <= 30 ? 26 : sliderSize;
+      fontSize = sliderSize <= 30 ? 10 : 12;
+    }
+
+    return {
+      inputWidth: inputWidth,
+      inputHeight: 18,
+      fontSize: fontSize
+    };
+  }
+  /**
+   * @desc Clamp slider value between min and max values
+   * @param type - props.sliderType
+   * @param value - value to clamp
+   */
+
+  function clampSliderValue(props, value) {
+    function clamp(num, min, max) {
+      return Math.min(Math.max(num, min), max);
+    }
+
+    switch (props.sliderType) {
+      case 'hue':
+        return clamp(value, 0, 360);
+
+      case 'saturation':
+      case 'value':
+        return clamp(value, 0, 100);
+
+      case 'red':
+      case 'green':
+      case 'blue':
+        return clamp(value, 0, 255);
+
+      case 'alpha':
+        return clamp(value, 0, 1);
+
+      case 'kelvin':
+        var minTemperature = props.minTemperature,
+            maxTemperature = props.maxTemperature;
+        return clamp(value, minTemperature, maxTemperature);
+    }
+  }
+  /**
+   * @desc Get the current slider value from input field input
+   * @param props - slider props
+   * @param e - KeyboardEvent
+   */
+
+  function getSliderValueFromInputField(e) {
+    var target = e.target;
+    var valueNum = parseInt(target.value); // regex for digit or dot (.)
+
+    if (!/^([0-9]|\.)$/i.test(e.key)) {
+      e.preventDefault();
+      return valueNum;
+    }
+
+    var valueString = target.value.toString();
+
+    if (target.selectionStart !== undefined) {
+      // cursor position
+      valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
+    } else {
+      valueString = valueString + e.key.toString();
+    }
+
+    return +valueString;
+  }
+  /**
+   * @desc Get the current slider value from clipboard data
+   * @param props - slider props
+   * @param e - ClipboardEvent
+   */
+
+  function getSliderValueFromClipboard(props, e) {
+    // allow only whole or decimal numbers
+    var r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
+    var valueString = e.clipboardData.getData('text');
+
+    if (!r.test(valueString)) {
+      return 0;
+    }
+
+    var valueNum = +valueString;
+    return clampSliderValue(props, valueNum);
+  }
+
   var sliderDefaultOptions = {
     sliderShape: 'bar',
     sliderType: 'value',
@@ -755,17 +857,30 @@
         handleRadius = props.handleRadius,
         padding = props.padding,
         sliderShape = props.sliderShape;
+    var ishorizontal = props.layoutDirection === 'horizontal';
     var length;
 
-    if (props.showInput) {
-      length = width - 55;
+    if (props.sliderLength) {
+      length = props.sliderLength;
     } else {
-      var _props$sliderLength;
+      // automatically calculate slider length
+      length = width - handleRadius;
 
-      length = (_props$sliderLength = props.sliderLength) != null ? _props$sliderLength : width;
-    }
+      if (props.showInput) {
+        var _getInputDimensions = getInputDimensions(props),
+            inputWidth = _getInputDimensions.inputWidth,
+            inputHeight = _getInputDimensions.inputHeight;
 
-    var ishorizontal = props.layoutDirection === 'horizontal'; // automatically calculate sliderSize if its not defined
+        length -= ishorizontal ? inputHeight : inputWidth;
+        length -= 3; // padding
+      }
+
+      if (props.showLabel) {
+        length -= ishorizontal ? 12 : 10;
+        length -= 3; // padding
+      }
+    } // automatically calculate sliderSize if its not defined
+
 
     sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2;
 
@@ -818,7 +933,7 @@
         var minTemperature = props.minTemperature,
             maxTemperature = props.maxTemperature;
         var temperatureRange = maxTemperature - minTemperature;
-        var percent = (color.kelvin - minTemperature) / temperatureRange * 100; // clmap percentage
+        var percent = (color.kelvin - minTemperature) / temperatureRange * 100; // clamp percentage
 
         return Math.max(0, Math.min(percent, 100));
 
@@ -986,83 +1101,6 @@
       x2: ishorizontal ? '0%' : '100%',
       y2: '0%'
     };
-  }
-
-  /**
-   * @desc Clamp slider value between min and max values
-   * @param type - props.sliderType
-   * @param value - value to clamp
-   */
-  function clampSliderValue(props, value) {
-    function clamp(num, min, max) {
-      return Math.min(Math.max(num, min), max);
-    }
-
-    switch (props.sliderType) {
-      case 'hue':
-        return clamp(value, 0, 360);
-
-      case 'saturation':
-      case 'value':
-        return clamp(value, 0, 100);
-
-      case 'red':
-      case 'green':
-      case 'blue':
-        return clamp(value, 0, 255);
-
-      case 'alpha':
-        return clamp(value, 0, 1);
-
-      case 'kelvin':
-        var minTemperature = props.minTemperature,
-            maxTemperature = props.maxTemperature;
-        return clamp(value, minTemperature, maxTemperature);
-    }
-  }
-  /**
-   * @desc Get the current slider value from input field input
-   * @param props - slider props
-   * @param e - KeyboardEvent
-   */
-
-  function getSliderValueFromInputField(e) {
-    var target = e.target;
-    var valueNum = parseInt(target.value); // regex for digit or dot (.)
-
-    if (!/^([0-9]|\.)$/i.test(e.key)) {
-      e.preventDefault();
-      return valueNum;
-    }
-
-    var valueString = target.value.toString();
-
-    if (target.selectionStart !== undefined) {
-      // cursor position
-      valueString = valueString.substring(0, target.selectionStart) + e.key.toString() + valueString.substring(target.selectionEnd);
-    } else {
-      valueString = valueString + e.key.toString();
-    }
-
-    return +valueString;
-  }
-  /**
-   * @desc Get the current slider value from clipboard data
-   * @param props - slider props
-   * @param e - ClipboardEvent
-   */
-
-  function getSliderValueFromClipboard(props, e) {
-    // allow only whole or decimal numbers
-    var r = /^[+]?([.]\d+|\d+([.]\d+)?)$/i;
-    var valueString = e.clipboardData.getData('text');
-
-    if (!r.test(valueString)) {
-      return 0;
-    }
-
-    var valueNum = +valueString;
-    return clampSliderValue(props, valueNum);
   }
 
   var TAU = Math.PI * 2; // javascript's modulo operator doesn't produce positive numbers with negative input
@@ -1382,6 +1420,7 @@
   exports.getBoxValueFromInput = getBoxValueFromInput;
   exports.getCurrentSliderValue = getCurrentSliderValue;
   exports.getHandleAtPoint = getHandleAtPoint;
+  exports.getInputDimensions = getInputDimensions;
   exports.getSliderDimensions = getSliderDimensions;
   exports.getSliderGradient = getSliderGradient;
   exports.getSliderGradientCoords = getSliderGradientCoords;
